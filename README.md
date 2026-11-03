@@ -243,3 +243,7 @@ Las capturas salen siempre de la demo, nunca de chats reales.
 | `src/boss.js` | El guion y el árbol de ficheros del modo jefe |
 | `scripts/capturas.js` | Genera las capturas |
 | `test/smoke.js` | Prueba de humo de la interfaz |
+
+## Licencia
+
+© 2026 Juan Bautista Delorme Pinedo. Todos los derechos reservados. Ver [LICENSE](LICENSE).

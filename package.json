@@ -24,5 +24,6 @@
   "devDependencies": {
     "puppeteer-core": "^25.16.0"
   },
-  "description": "WhatsApp en la terminal, sobrio, con modo jefe"
+  "description": "WhatsApp en la terminal, sobrio, con modo jefe",
+  "license": "UNLICENSED"
 }
