@@ -1,0 +1,28 @@
+{
+  "name": "wa-terminal",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node src/index.js",
+    "demo": "node src/index.js --demo",
+    "capturas": "node scripts/capturas.js",
+    "test": "node test/smoke.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "baileys": "^7.0.0-rc14",
+    "ink": "^8.0.0",
+    "pino": "^10.4.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.1",
+    "string-width": "^8.3.0",
+    "wrap-ansi": "^10.0.2"
+  },
+  "private": true,
+  "bin": {
+    "wat": "src/index.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.16.0"
+  },
+  "description": "WhatsApp en la terminal, sobrio, con modo jefe"
+}
