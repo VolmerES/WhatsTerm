@@ -23,7 +23,8 @@ const FRAMES = ['·', '✢', '✳', '✶', '✻', '✽', '✻', '✶', '✳', '�
 const GROUP_GAP = 10 * 60_000; // a partir de 10 min sin hablar, se repite el nombre
 
 // abre un fichero con la aplicación por defecto de Windows (WA_TERMINAL_NO_OPEN=1 lo desactiva, para pruebas)
-const openFile = (file) => process.env.WA_TERMINAL_NO_OPEN || exec(`start "" "${file}"`);
+const OPEN_CMD = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+const openFile = (file) => process.env.WA_TERMINAL_NO_OPEN || exec(`${OPEN_CMD} "${file}"`);
 
 const COMMANDS = [
   ['/open', 'Abrir un chat por nombre: /open ana'],
@@ -635,7 +636,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
   } else if (qr) {
     title = [{ text: 'Vincular dispositivo', bold: true }];
     entries = [
-      { type: 'info', text: `Escanea con WhatsApp → Ajustes → Dispositivos vinculados. También como imagen en ${path.join(dataDir || '', 'qr.png')} (se renueva cada ~20 s). Sin QR: npm start -- --pair=34XXXXXXXXX` },
+      { type: 'info', text: `Escanea con WhatsApp → Ajustes → Dispositivos vinculados. También como imagen en ${path.join(dataDir || '', 'qr.png')} (se renueva cada ~20 s). Sin QR: whatsterm --pair=34XXXXXXXXX` },
       { type: 'raw', lines: qr },
     ];
   } else if (openChat) {

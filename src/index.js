@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import React from 'react';
@@ -7,7 +9,14 @@ import { Store } from './store.js';
 import { App } from './ui.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const dataDir = process.env.WA_TERMINAL_DATA || path.join(root, 'data');
+// Los datos van a ~/.whatsterm, fuera del paquete, para que no se pierdan al actualizar.
+// Si hay una carpeta data/ junto al código (instalación antigua desde git), se sigue usando esa.
+const dataDir = process.env.WHATSTERM_DATA || process.env.WA_TERMINAL_DATA
+  || (fs.existsSync(path.join(root, 'data')) ? path.join(root, 'data') : path.join(os.homedir(), '.whatsterm'));
+if (process.argv.includes('--version') || process.argv.includes('-v')) {
+  console.log(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version);
+  process.exit(0);
+}
 const demo = process.argv.includes('--demo');
 // la ruta que sale en la cabecera; por defecto, la carpeta desde la que lo lanzas
 const cwdArg = process.argv.find((a) => a.startsWith('--cwd='));

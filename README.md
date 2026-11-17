@@ -1,4 +1,4 @@
-# wa-terminal
+# WhatsTerm
 
 WhatsApp en la terminal: un chat normal y sobrio, en negro y con colores
 apagados, que en una oficina pasa por una herramienta de desarrollo más. Si
@@ -12,10 +12,13 @@ haciendo un refactor.
 - Tus mensajes a la derecha y los del otro a la izquierda, con la hora. En los
   grupos, cada persona con su color.
 - «escribiendo…» cuando el otro está escribiendo.
-- Fotos, vídeos, audios y documentos, que se abren en el visor de Windows.
+- Fotos, vídeos, audios y documentos, que se abren con la aplicación del sistema.
 - Atajos de teclado para moverse entre chats sin tocar el ratón.
 - Al salir, la terminal vuelve a como estaba, sin rastro de los mensajes.
 
+> **WhatsTerm no tiene ninguna relación con WhatsApp ni con Meta**, ni está
+> respaldado por ellos. WhatsApp es una marca de WhatsApp LLC.
+>
 > **Aviso.** Usa [Baileys](https://github.com/WhiskeySockets/Baileys), un
 > cliente **no oficial** de WhatsApp. Puede acabar en baneo del número. Lee
 > [Riesgo](#riesgo) antes de usarlo.
@@ -37,42 +40,46 @@ haciendo un refactor.
 
 Hace falta **Node.js 22 o posterior**.
 
-```powershell
-git clone git@github.com-personal:VolmerES/wa-terminal.git
-cd wa-terminal
-npm install
+```sh
+npm install -g whatsterm
 ```
+
+Eso deja dos comandos, iguales: `whatsterm` y `wat`, más corto y más discreto.
 
 Para verlo sin vincular nada, con chats de mentira:
 
-```powershell
-npm run demo
+```sh
+whatsterm --demo
 ```
+
+Para actualizar, `npm install -g whatsterm@latest`; para desinstalar,
+`npm uninstall -g whatsterm`. Ninguno de los dos borra la sesión ni los mensajes
+(ver [Datos en disco](#datos-en-disco)).
 
 ## Vincular el móvil
 
-```powershell
-npm start
+```sh
+whatsterm
 ```
 
 La primera vez sale un QR. En el móvil: **Ajustes → Dispositivos vinculados →
 Vincular un dispositivo**, y lo escaneas.
 
 - El QR sale en la terminal, que tiene que medir al menos 70 columnas y unas 45
-  filas. Además se abre solo como imagen, `data/qr.png`, que es lo que mejor se
-  escanea.
+  filas. Además se abre solo como imagen, `qr.png` en la carpeta de datos, que
+  es lo que mejor se escanea.
 - El QR cambia cada ~20 segundos. Si la imagen abierta ya no vale, vuelve a
-  abrir `data/qr.png`.
+  abrir `qr.png`.
 - **Sin QR**: vincula con tu número (con prefijo, sin `+`):
 
-  ```powershell
-  npm start -- --pair=34600111222
+  ```sh
+  whatsterm --pair=34600111222
   ```
 
   En la terminal sale un código de 8 letras. En el móvil: **Vincular un
   dispositivo → Vincular con el número de teléfono**, y lo escribes.
 
-La sesión se guarda en `data/auth/`. Las siguientes veces entra directamente.
+La sesión se guarda en `auth/`, dentro de la carpeta de datos. Las siguientes veces entra directamente.
 
 ## Uso
 
@@ -164,8 +171,8 @@ Fotos, vídeos, audios, notas de voz, stickers y documentos salen en la
 conversación con un número: `[imagen #3] mira qué cola hay`.
 
 - `/view` abre el último del chat; `/view 3`, el `#3`.
-- Se descargan a `data/media/` y se abren con la aplicación que tenga Windows
-  para ese tipo de fichero. La segunda vez ya no se descargan.
+- Se descargan a `media/`, en la carpeta de datos, y se abren con la aplicación
+  que tenga el sistema para ese tipo de fichero. La segunda vez ya no se descargan.
 - Si un adjunto es antiguo y WhatsApp ya no lo tiene en sus servidores, se le
   pide al móvil que lo vuelva a subir; para eso tiene que estar encendido.
 - Los que salen como `[imagen, no disponible]` se guardaron con una versión
@@ -184,8 +191,8 @@ con búsquedas, lecturas de ficheros, diffs y tests en verde, y el spinner de
   prompt más.
 - Los mensajes siguen llegando por debajo. Abajo a la derecha se cuentan como
   `● 2 background tasks`.
-- El guion está en `src/boss.js`, por si quieres cambiar el proyecto o las
-  frases.
+- El guion está en [`src/boss.js`](src/boss.js), por si quieres cambiar el
+  proyecto o las frases.
 
 ## Riesgo
 
@@ -207,24 +214,30 @@ No lo uses para envíos masivos ni para escribir a desconocidos.
 
 ## Datos en disco
 
-Todo va a `data/`, que **no se sube a git**:
+Todo va a la carpeta `.whatsterm` de tu usuario (`C:\Users\<tú>\.whatsterm` en
+Windows, `~/.whatsterm` en Mac y Linux). Si ejecutas el código desde un clon del
+repo y existe una carpeta `data/` junto a él, se usa esa.
 
 | Qué | Para qué | Cuidado |
 |---|---|---|
-| `data/auth/` | La sesión vinculada | Quien tenga esta carpeta puede leer y escribir tu WhatsApp. No la copies ni la compartas |
-| `data/store.json` | Los últimos 150 mensajes de cada chat y los nombres, para tenerlos al volver a abrir | En un ordenador del trabajo, tenlo en cuenta. Se puede borrar cuando quieras |
-| `data/media/` | Los adjuntos que has abierto con `/view` | Igual que el anterior |
-| `data/qr.png` | El QR mientras vinculas | Se borra solo al vincular |
-| `data/wa.log` | Avisos y errores de Baileys | |
+| `auth/` | La sesión vinculada | Quien tenga esta carpeta puede leer y escribir tu WhatsApp. No la copies ni la compartas |
+| `store.json` | Los últimos 150 mensajes de cada chat y los nombres, para tenerlos al volver a abrir | En un ordenador del trabajo, tenlo en cuenta. Se puede borrar cuando quieras |
+| `media/` | Los adjuntos que has abierto con `/view` | Igual que el anterior |
+| `qr.png` | El QR mientras vinculas | Se borra solo al vincular |
+| `wa.log` | Avisos y errores de Baileys | |
 
-Con la variable `WA_TERMINAL_DATA` se puede poner esa carpeta en otro sitio.
+Con la variable `WHATSTERM_DATA` se puede poner esa carpeta en otro sitio.
 
 Para desvincular de verdad, `/logout`, o en el móvil **Dispositivos vinculados →
 el dispositivo → Cerrar sesión**.
 
 ## Desarrollo
 
-```powershell
+```sh
+git clone https://github.com/VolmerES/WhatsTerm.git
+cd WhatsTerm
+npm install
+npm start          # la app de verdad
 npm run demo       # la app con chats de mentira
 npm test           # renderiza la demo en una terminal simulada, pulsa teclas y vuelca las pantallas
 npm run capturas   # rehace las capturas de docs/capturas/ (usa el Chrome instalado)
@@ -234,11 +247,11 @@ Las capturas salen siempre de la demo, nunca de chats reales.
 
 | Fichero | Qué hace |
 |---|---|
-| `src/index.js` | Arranque y opciones (`--demo`, `--pair=`) |
+| `src/index.js` | Arranque y opciones (`--demo`, `--pair=`, `--version`) |
 | `src/ui.js` | La interfaz, con [Ink](https://github.com/vadimdemedes/ink) a pantalla completa |
 | `src/input.js` | La caja de texto, propia para que los atajos no se escriban en el mensaje |
 | `src/wa.js` | La conexión con Baileys: mensajes, nombres, «escribiendo», adjuntos |
-| `src/store.js` | Chats, mensajes y nombres, guardados en `data/store.json` |
+| `src/store.js` | Chats, mensajes y nombres, guardados en `store.json` |
 | `src/demo.js` | El backend de mentira de `npm run demo` |
 | `src/boss.js` | El guion y el árbol de ficheros del modo jefe |
 | `scripts/capturas.js` | Genera las capturas |
@@ -246,4 +259,6 @@ Las capturas salen siempre de la demo, nunca de chats reales.
 
 ## Licencia
 
-© 2026 Juan Bautista Delorme Pinedo. Todos los derechos reservados. Ver [LICENSE](LICENSE).
+[MIT](LICENSE). Puedes usarlo, modificarlo y redistribuirlo manteniendo el aviso
+de copyright. Se ofrece tal cual, sin garantías: el riesgo de baneo es de quien
+lo usa.
