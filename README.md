@@ -1,31 +1,54 @@
-# WhatsTerm
+<p align="center">
+  <img src="https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/marca/banner.png" alt="WhatsTerm: tu WhatsApp, en la terminal. Pulsa Esc y parece que estás trabajando." width="880">
+</p>
 
-WhatsApp en la terminal: un chat normal y sobrio, en negro y con colores
-apagados, que en una oficina pasa por una herramienta de desarrollo más. Si
-alguien se acerca, **Esc** lo tapa todo con una sesión de Claude Code de mentira
-haciendo un refactor.
+<p align="center">
+  <a href="https://www.npmjs.com/package/whatsterm"><img src="https://img.shields.io/npm/v/whatsterm?color=25D366&label=npm" alt="Versión en npm"></a>
+  <img src="https://img.shields.io/node/v/whatsterm?color=25D366" alt="Node.js 22 o posterior">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-25D366" alt="Licencia MIT"></a>
+</p>
 
-![Una conversación](docs/capturas/02-chat.png)
+<p align="center">
+  <b>Tu WhatsApp, en la terminal.</b> Un chat sobrio, en negro y con colores apagados,<br>
+  que en una oficina pasa por una herramienta de desarrollo más.<br>
+  Si alguien se acerca, <b>Esc</b> lo tapa todo con una sesión de Claude Code de mentira.
+</p>
 
-- Lista de chats con nombre, hora, vista previa y mensajes sin leer, como en el
-  móvil.
-- Tus mensajes a la derecha y los del otro a la izquierda, con la hora. En los
-  grupos, cada persona con su color.
-- «escribiendo…» cuando el otro está escribiendo.
-- Fotos, vídeos, audios y documentos, que se abren con la aplicación del sistema.
-- Atajos de teclado para moverse entre chats sin tocar el ratón.
-- Al salir, la terminal vuelve a como estaba, sin rastro de los mensajes.
-
-> **WhatsTerm no tiene ninguna relación con WhatsApp ni con Meta**, ni está
-> respaldado por ellos. WhatsApp es una marca de WhatsApp LLC.
->
-> **Aviso.** Usa [Baileys](https://github.com/WhiskeySockets/Baileys), un
-> cliente **no oficial** de WhatsApp. Puede acabar en baneo del número. Lee
+> [!WARNING]
+> **WhatsTerm es un cliente no oficial.** No tiene ninguna relación con WhatsApp
+> ni con Meta, ni está respaldado por ellos; WhatsApp es una marca de WhatsApp
+> LLC. Usa [Baileys](https://github.com/WhiskeySockets/Baileys) y eso va contra
+> las condiciones de WhatsApp: **puede acabar en baneo del número**. Lee
 > [Riesgo](#riesgo) antes de usarlo.
+
+## Empezar
+
+```sh
+npm install -g whatsterm   # hace falta Node.js 22 o posterior
+whatsterm --demo           # pruébalo con chats de mentira, sin vincular nada
+whatsterm                  # el de verdad: escanea el QR con el móvil y listo
+```
+
+También se puede lanzar como `wat`, más corto y más discreto.
+
+![Una conversación](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/02-chat.png)
+
+## Qué hace
+
+| | |
+|---|---|
+| **Chats como en el móvil** | Lista con nombre, hora, vista previa y mensajes sin leer. Los tuyos a la derecha, los del otro a la izquierda; en los grupos, cada persona con su color |
+| **«escribiendo…»** | Ves cuándo el otro está escribiendo |
+| **Adjuntos** | Fotos, vídeos, audios y documentos, que se abren con la aplicación del sistema |
+| **Solo teclado** | Atajos para moverse entre chats, fijarlos y marcarlos sin tocar el ratón |
+| **Modo jefe** | **Esc** y la pantalla pasa a ser un refactor en curso. Otro **Esc** y vuelves |
+| **Sin rastro** | Al salir, la terminal vuelve a como estaba, sin los mensajes en el historial |
+
+![Modo jefe](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/06-modo-jefe.png)
 
 ## Índice
 
-- [Instalar](#instalar)
+- [Instalar y actualizar](#instalar-y-actualizar)
 - [Vincular el móvil](#vincular-el-móvil)
 - [Uso](#uso)
 - [Atajos de teclado](#atajos-de-teclado)
@@ -34,27 +57,24 @@ haciendo un refactor.
 - [Modo jefe](#modo-jefe)
 - [Riesgo](#riesgo)
 - [Datos en disco](#datos-en-disco)
+- [Preguntas frecuentes](#preguntas-frecuentes)
+- [Contribuir](#contribuir)
 - [Desarrollo](#desarrollo)
 
-## Instalar
+## Instalar y actualizar
 
-Hace falta **Node.js 22 o posterior**.
-
-```sh
-npm install -g whatsterm
-```
-
-Eso deja dos comandos, iguales: `whatsterm` y `wat`, más corto y más discreto.
-
-Para verlo sin vincular nada, con chats de mentira:
+Hace falta **Node.js 22 o posterior** ([nodejs.org](https://nodejs.org)).
 
 ```sh
-whatsterm --demo
+npm install -g whatsterm          # instalar
+npm install -g whatsterm@latest   # actualizar
+npm uninstall -g whatsterm        # desinstalar
+whatsterm --version               # qué versión tienes
 ```
 
-Para actualizar, `npm install -g whatsterm@latest`; para desinstalar,
-`npm uninstall -g whatsterm`. Ninguno de los dos borra la sesión ni los mensajes
-(ver [Datos en disco](#datos-en-disco)).
+Ni actualizar ni desinstalar borran la sesión ni los mensajes (ver
+[Datos en disco](#datos-en-disco)). Está hecho y probado en **Windows**
+(Windows Terminal); en Mac y Linux debería funcionar, pero está menos probado.
 
 ## Vincular el móvil
 
@@ -83,7 +103,7 @@ La sesión se guarda en `auth/`, dentro de la carpeta de datos. Las siguientes v
 
 ## Uso
 
-![Al arrancar](docs/capturas/01-inicio.png)
+![Al arrancar](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/01-inicio.png)
 
 A la izquierda, la lista de chats; a la derecha, la conversación; abajo, la caja
 de texto. Para empezar:
@@ -98,11 +118,11 @@ Arriba de la conversación siempre sale con quién estás hablando.
 Al abrir un chat, sus mensajes se marcan como leídos en WhatsApp (salen los
 ticks azules, si los tienes activados).
 
-![Un grupo](docs/capturas/03-grupo.png)
+![Un grupo](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/03-grupo.png)
 
 ### En la lista de chats
 
-![La lista con el foco](docs/capturas/04-lista.png)
+![La lista con el foco](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/04-lista.png)
 
 | Marca | Qué significa |
 |---|---|
@@ -147,7 +167,7 @@ de lectura.
 Se escriben en la caja de texto. Al escribir `/` aparece una sugerencia del
 comando abajo.
 
-![La ayuda](docs/capturas/05-ayuda.png)
+![La ayuda](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/05-ayuda.png)
 
 | Comando | Atajo | Qué hace |
 |---|---|---|
@@ -179,8 +199,6 @@ conversación con un número: `[imagen #3] mira qué cola hay`.
   anterior del programa, sin los datos para descargarlos, y no se pueden abrir.
 
 ## Modo jefe
-
-![Modo jefe](docs/capturas/06-modo-jefe.png)
 
 **Esc** cambia la pantalla entera a una sesión de Claude Code de mentira: un
 árbol de ficheros a la izquierda y, a la derecha, un refactor que avanza solo,
@@ -231,6 +249,34 @@ Con la variable `WHATSTERM_DATA` se puede poner esa carpeta en otro sitio.
 Para desvincular de verdad, `/logout`, o en el móvil **Dispositivos vinculados →
 el dispositivo → Cerrar sesión**.
 
+## Preguntas frecuentes
+
+**¿Necesito tener el móvil encendido?** Solo para vincular y para recuperar
+adjuntos antiguos. Después funciona como WhatsApp Web: el ordenador es un
+dispositivo vinculado más.
+
+**¿Lee mis mensajes alguien más?** No. WhatsTerm habla directamente con los
+servidores de WhatsApp desde tu ordenador. No hay ningún servidor intermedio y
+no manda nada a ningún otro sitio.
+
+**¿Puedo usarlo en el ordenador del trabajo?** Técnicamente sí; para eso está el
+modo jefe. Pero guarda los últimos mensajes en disco (ver
+[Datos en disco](#datos-en-disco)) y quien tenga la carpeta `auth/` tiene tu
+WhatsApp. Valóralo tú.
+
+**El QR no se escanea.** Agranda la terminal (70×45 como mínimo), abre la imagen
+`qr.png` de la carpeta de datos o vincula con el número: `whatsterm --pair=34600111222`.
+
+**¿Por qué la pestaña se llama `claude`?** Para que el modo jefe sea creíble
+también desde fuera.
+
+## Contribuir
+
+Los errores y las ideas van a los
+[issues](https://github.com/VolmerES/WhatsTerm/issues). Para mandar cambios,
+abre un pull request; antes, pasa `npm test`. Nada que envíe mensajes de forma
+automática ni en masa: es justo lo que hace que WhatsApp banee.
+
 ## Desarrollo
 
 ```sh
@@ -256,6 +302,7 @@ Las capturas salen siempre de la demo, nunca de chats reales.
 | `src/boss.js` | El guion y el árbol de ficheros del modo jefe |
 | `scripts/capturas.js` | Genera las capturas |
 | `test/smoke.js` | Prueba de humo de la interfaz |
+| `docs/marca/` | Logo, icono y banner (verde `#25D366` sobre `#0F1012`, JetBrains Mono e Inter) |
 
 ## Licencia
 
