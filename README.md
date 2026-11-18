@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/marca/banner.png" alt="WhatsTerm: tu WhatsApp, en la terminal. Pulsa Esc y parece que estás trabajando." width="880">
+  <img src="https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/marca/banner.png" alt="WhatsTerm: tu WhatsApp, en la terminal. Un chat sobrio, solo con el teclado." width="880">
 </p>
 
 <p align="center">
@@ -10,8 +10,7 @@
 
 <p align="center">
   <b>Tu WhatsApp, en la terminal.</b> Un chat sobrio, en negro y con colores apagados,<br>
-  que en una oficina pasa por una herramienta de desarrollo más.<br>
-  Si alguien se acerca, <b>Esc</b> lo tapa todo con una sesión de Claude Code de mentira.
+  que en una oficina pasa por una herramienta de desarrollo más.
 </p>
 
 > [!WARNING]
@@ -41,10 +40,7 @@ También se puede lanzar como `wat`, más corto y más discreto.
 | **«escribiendo…»** | Ves cuándo el otro está escribiendo |
 | **Adjuntos** | Fotos, vídeos, audios y documentos, que se abren con la aplicación del sistema |
 | **Solo teclado** | Atajos para moverse entre chats, fijarlos y marcarlos sin tocar el ratón |
-| **Modo jefe** | **Esc** y la pantalla pasa a ser un refactor en curso. Otro **Esc** y vuelves |
 | **Sin rastro** | Al salir, la terminal vuelve a como estaba, sin los mensajes en el historial |
-
-![Modo jefe](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/06-modo-jefe.png)
 
 ## Índice
 
@@ -54,7 +50,6 @@ También se puede lanzar como `wat`, más corto y más discreto.
 - [Atajos de teclado](#atajos-de-teclado)
 - [Comandos](#comandos)
 - [Adjuntos](#adjuntos)
-- [Modo jefe](#modo-jefe)
 - [Riesgo](#riesgo)
 - [Datos en disco](#datos-en-disco)
 - [Preguntas frecuentes](#preguntas-frecuentes)
@@ -134,8 +129,6 @@ ticks azules, si los tienes activados).
 
 Abajo a la derecha sale cuántos mensajes sin leer tienes en otros chats.
 
-La pestaña de la terminal pasa a llamarse `claude` mientras está abierto.
-
 ## Atajos de teclado
 
 | Tecla | Dónde | Qué hace |
@@ -152,7 +145,6 @@ La pestaña de la terminal pasa a llamarse `claude` mientras está abierto.
 | **Ctrl+U** | siempre | Abrir el siguiente chat con mensajes sin leer |
 | **PgUp** / **PgDn** | siempre | Subir y bajar por la conversación |
 | **Ctrl+B** | siempre | Esconder o mostrar la lista de chats |
-| **Esc** | siempre | Modo jefe, y vuelta |
 | **Ctrl+C** | siempre | Salir |
 
 En la caja de texto: **← →** mueven el cursor, **Inicio / Fin** (o **Ctrl+A /
@@ -179,7 +171,6 @@ comando abajo.
 | `/chats` | `/c` | Va a la lista de chats (como **Tab**) |
 | `/bell` | | Enciende o apaga el pitido de la terminal con los mensajes nuevos de otros chats. Viene apagado |
 | `/clear` | | Quita de la pantalla las notas (ayuda, avisos, errores) |
-| `/boss` | | Modo jefe (como **Esc**) |
 | `/status` | | Estado de la conexión y número de chats |
 | `/help` | `?` | Comandos y atajos |
 | `/logout` | | Desvincula este ordenador de tu WhatsApp y borra la sesión |
@@ -197,20 +188,6 @@ conversación con un número: `[imagen #3] mira qué cola hay`.
   pide al móvil que lo vuelva a subir; para eso tiene que estar encendido.
 - Los que salen como `[imagen, no disponible]` se guardaron con una versión
   anterior del programa, sin los datos para descargarlos, y no se pueden abrir.
-
-## Modo jefe
-
-**Esc** cambia la pantalla entera a una sesión de Claude Code de mentira: un
-árbol de ficheros a la izquierda y, a la derecha, un refactor que avanza solo,
-con búsquedas, lecturas de ficheros, diffs y tests en verde, y el spinner de
-«Thinking…» abajo. Otro **Esc** devuelve el chat como estaba.
-
-- En modo jefe **no se envía nada a WhatsApp**: lo que escribas aparece como un
-  prompt más.
-- Los mensajes siguen llegando por debajo. Abajo a la derecha se cuentan como
-  `● 2 background tasks`.
-- El guion está en [`src/boss.js`](src/boss.js), por si quieres cambiar el
-  proyecto o las frases.
 
 ## Riesgo
 
@@ -259,16 +236,12 @@ dispositivo vinculado más.
 servidores de WhatsApp desde tu ordenador. No hay ningún servidor intermedio y
 no manda nada a ningún otro sitio.
 
-**¿Puedo usarlo en el ordenador del trabajo?** Técnicamente sí; para eso está el
-modo jefe. Pero guarda los últimos mensajes en disco (ver
+**¿Puedo usarlo en el ordenador del trabajo?** Técnicamente sí, pero guarda los últimos mensajes en disco (ver
 [Datos en disco](#datos-en-disco)) y quien tenga la carpeta `auth/` tiene tu
 WhatsApp. Valóralo tú.
 
 **El QR no se escanea.** Agranda la terminal (70×45 como mínimo), abre la imagen
 `qr.png` de la carpeta de datos o vincula con el número: `whatsterm --pair=34600111222`.
-
-**¿Por qué la pestaña se llama `claude`?** Para que el modo jefe sea creíble
-también desde fuera.
 
 ## Contribuir
 
@@ -299,7 +272,6 @@ Las capturas salen siempre de la demo, nunca de chats reales.
 | `src/wa.js` | La conexión con Baileys: mensajes, nombres, «escribiendo», adjuntos |
 | `src/store.js` | Chats, mensajes y nombres, guardados en `store.json` |
 | `src/demo.js` | El backend de mentira de `npm run demo` |
-| `src/boss.js` | El guion y el árbol de ficheros del modo jefe |
 | `scripts/capturas.js` | Genera las capturas |
 | `test/smoke.js` | Prueba de humo de la interfaz |
 | `docs/marca/` | Logo, icono y banner (verde `#25D366` sobre `#0F1012`, JetBrains Mono e Inter) |
