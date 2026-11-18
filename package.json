@@ -1,7 +1,7 @@
 {
   "name": "whatsterm",
-  "version": "1.0.0",
-  "description": "WhatsApp en la terminal: un chat sobrio, solo con el teclado. Cliente no oficial, sin relación con WhatsApp ni Meta.",
+  "version": "1.0.1",
+  "description": "WhatsApp en la terminal: un chat sobrio con modo jefe. Cliente no oficial, sin relación con WhatsApp ni Meta.",
   "keywords": [
     "whatsapp",
     "terminal",
