@@ -201,16 +201,23 @@ conversación con un número: `[imagen #3] mira qué cola hay`.
 ## Modo jefe
 
 **Esc** cambia la pantalla entera a una sesión de Claude Code de mentira: un
-árbol de ficheros a la izquierda y, a la derecha, un refactor que avanza solo,
+árbol de ficheros a la izquierda y, a la derecha, un agente que trabaja solo,
 con búsquedas, lecturas de ficheros, diffs y tests en verde, y el spinner de
 «Thinking…» abajo. Otro **Esc** devuelve el chat como estaba.
+
+- **No se acaba nunca.** Hay seis tareas (un refactor, una paginación, un fallo
+  con Redis, webhooks duplicados, logs, una consulta lenta) que se encadenan en
+  orden aleatorio, con otras cifras y otro ritmo cada vez. Una vuelta completa
+  dura unos 4 minutos, y la siguiente sale en otro orden.
+- Entre tarea y tarea hay una pausa, como si escribieras el siguiente prompt, y
+  en el árbol se marcan los ficheros que va tocando la tarea en curso.
 
 - En modo jefe **no se envía nada a WhatsApp**: lo que escribas aparece como un
   prompt más.
 - Los mensajes siguen llegando por debajo. Abajo a la derecha se cuentan como
   `● 2 background tasks`.
-- El guion está en [`src/boss.js`](src/boss.js), por si quieres cambiar el
-  proyecto o las frases.
+- Las tareas están en [`src/boss.js`](src/boss.js), por si quieres cambiar el
+  proyecto, las frases o añadir otras.
 
 ## Riesgo
 
@@ -299,7 +306,7 @@ Las capturas salen siempre de la demo, nunca de chats reales.
 | `src/wa.js` | La conexión con Baileys: mensajes, nombres, «escribiendo», adjuntos |
 | `src/store.js` | Chats, mensajes y nombres, guardados en `store.json` |
 | `src/demo.js` | El backend de mentira de `npm run demo` |
-| `src/boss.js` | El guion y el árbol de ficheros del modo jefe |
+| `src/boss.js` | Las tareas y el árbol de ficheros del modo jefe |
 | `scripts/capturas.js` | Genera las capturas |
 | `test/smoke.js` | Prueba de humo de la interfaz |
 | `docs/marca/` | Logo, icono y banner (verde `#25D366` sobre `#0F1012`, JetBrains Mono e Inter) |

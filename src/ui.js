@@ -11,7 +11,7 @@ import QRCode from 'qrcode';
 import wrapAnsi from 'wrap-ansi';
 import stringWidth from 'string-width';
 import { LineInput } from './input.js';
-import { BOSS_PROMPT, BOSS_SCRIPT, BOSS_TREE, SPINNER_VERBS } from './boss.js';
+import { bossSession, BOSS_TREE, SPINNER_VERBS } from './boss.js';
 
 const h = React.createElement;
 const ACCENT = '#D77757'; // solo para el modo jefe
@@ -303,20 +303,21 @@ function ChatList({ chats, store, width, height, selected, openId, focused, typi
 }
 
 // Modo jefe: árbol de ficheros de mentira
-function FakeTree({ width, height }) {
+function FakeTree({ width, height, touched }) {
   return h(
     Box,
     { flexDirection: 'column', width, height, borderStyle: 'single', borderTop: false, borderBottom: false, borderLeft: false, borderColor: 'gray' },
     h(Text, { bold: true, dimColor: true }, ' EXPLORER'),
     h(Text, { dimColor: true }, ' ▾ ~/api'),
-    ...BOSS_TREE.slice(0, height - 2).map((l, i) =>
-      h(
+    ...BOSS_TREE.slice(0, height - 2).map((l, i) => {
+      const hit = l.path && touched.includes(l.path);
+      return h(
         Text,
         { key: i, wrap: 'truncate' },
-        h(Text, { color: l.mark ? ACCENT : undefined }, ' ' + (l.mark || ' ') + ' '),
-        h(Text, { bold: l.strong, dimColor: l.dim }, l.label),
-      ),
-    ),
+        h(Text, { color: hit ? ACCENT : undefined }, hit ? ' ● ' : '   '),
+        h(Text, { bold: l.strong || hit, dimColor: l.dim || (l.path && !hit) }, l.label),
+      );
+    }),
   );
 }
 
@@ -436,16 +437,31 @@ export function App({ backend, store, cwd, demo, dataDir }) {
   }, []);
 
   // ---- modo jefe ----
+  // aplica un paso de la sesión de mentira (ver bossSession en boss.js)
+  const bossStep = (cur, s) => {
+    if (s.newTask) return { ...cur, start: Date.now(), verb: 'Thinking', idle: false, touched: [], entries: [...cur.entries, s.entry].slice(-80) };
+    return {
+      ...cur,
+      verb: SPINNER_VERBS[Math.floor(Math.random() * SPINNER_VERBS.length)],
+      idle: !!s.idle,
+      touched: s.touch && !cur.touched.includes(s.touch) ? [...cur.touched, s.touch] : cur.touched,
+      entries: [...cur.entries, s.entry].slice(-80),
+    };
+  };
   const startBoss = () => {
-    setBoss({ start: Date.now(), verb: 'Thinking', entries: [{ type: 'prompt', text: BOSS_PROMPT }] });
+    const steps = bossSession();
+    setBoss(bossStep({ entries: [], touched: [] }, steps.next().value));
     setFocus('input');
-    let t = 0;
-    bossTimers.current = BOSS_SCRIPT.map((s, i) => {
-      t += s.wait;
-      return setTimeout(() => {
-        setBoss((cur) => cur && { ...cur, verb: SPINNER_VERBS[(i + 3) % SPINNER_VERBS.length], entries: [...cur.entries, s] });
-      }, t);
-    });
+    const tick = () => {
+      const s = steps.next().value;
+      bossTimers.current = [
+        setTimeout(() => {
+          setBoss((cur) => cur && bossStep(cur, s));
+          tick();
+        }, s.wait),
+      ];
+    };
+    tick();
   };
   const stopBoss = () => {
     bossTimers.current.forEach(clearTimeout);
@@ -666,7 +682,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
 
   // línea de estado
   let statusLine = null;
-  if (boss) statusLine = h(Spinner, { verb: boss.verb, start: boss.start });
+  if (boss) statusLine = boss.idle ? null : h(Spinner, { verb: boss.verb, start: boss.start });
   else if (sc > 0) statusLine = h(Text, { dimColor: true }, `↓ ${sc} líneas más abajo · PgDn`);
 
   // pie
@@ -693,7 +709,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
       { flexDirection: 'row', height: mainH },
       showSide
         ? boss
-          ? h(FakeTree, { width: sideW, height: mainH })
+          ? h(FakeTree, { width: sideW, height: mainH, touched: boss.touched })
           : h(ChatList, { chats: chatList(), store, width: sideW, height: mainH, selected: selected ?? openId, openId, focused: focus === 'side', typingId: typing })
         : null,
       h(
