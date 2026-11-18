@@ -1,5 +1,5 @@
-// Prueba sin terminal real: renderiza la demo, simula teclas y vuelca la última pantalla.
-// Uso: node test/smoke.js
+// Test without a real terminal: renders the demo, simulates keys and dumps the last screen.
+// Usage: node test/smoke.js
 import { PassThrough, Writable } from 'node:stream';
 import React from 'react';
 import { render } from 'ink';
@@ -28,16 +28,16 @@ const shot = (label) => {
   out = '';
 };
 
-await wait(600); shot('inicio');
+await wait(600); shot('start');
 await key('\t'); await key('\x1b[B'); shot('panel: tab + ↓');
-await key('\r'); shot('abrir con enter');
-await type('hola, ¿qué tal?'); await wait(2500); shot('enviado, el otro escribe');
-await wait(2500); shot('respuesta');
+await key('\r'); shot('open with enter');
+await type('hey, how are you?'); await wait(2500); shot('sent, the other side is typing');
+await wait(2500); shot('reply');
 await key('\x0e'); shot('ctrl+n');
-await key('\x15'); shot('ctrl+u (siguiente sin leer)');
+await key('\x15'); shot('ctrl+u (next unread)');
 await type('/view'); shot('/view');
-await key('\t'); await key('p'); await key('\t'); shot('fijar con p');
-await key('\x1b'); await wait(5000); shot('modo jefe');
-await key('\x1b'); shot('vuelta');
+await key('\t'); await key('p'); await key('\t'); shot('pin with p');
+await key('\x1b'); await wait(5000); shot('boss mode');
+await key('\x1b'); shot('back');
 app.unmount();
 process.exit(0);

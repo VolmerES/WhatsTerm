@@ -1,5 +1,5 @@
-// Almacén de chats y nombres. Se guarda en data/store.json para que, al volver
-// a abrir, los chats y sus nombres sigan ahí aunque WhatsApp no reenvíe el historial.
+// Chat and name store. Saved to <data>/store.json so that chats and names are
+// still there on the next start, even if WhatsApp doesn't resend the history.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -9,9 +9,9 @@ export class Store {
   constructor(file) {
     this.file = file;
     this.chats = new Map(); // id -> { id, name, isGroup, unread, lastTs, msgs: [] }
-    this.names = new Map(); // jid -> nombre
-    this.alias = new Map(); // jid alternativo (lid <-> pn) -> id del chat
-    this.mediaSeq = 0; // numeración de adjuntos: [imagen #3]
+    this.names = new Map(); // jid -> name
+    this.alias = new Map(); // alternative jid (lid <-> pn) -> chat id
+    this.mediaSeq = 0; // attachment numbering: [image #3]
     this.timer = null;
     this.load();
   }
@@ -25,7 +25,7 @@ export class Store {
       for (const [k, v] of data.alias ?? []) this.alias.set(k, v);
       this.mediaSeq = data.mediaSeq ?? 0;
     } catch {
-      // fichero corrupto: se empieza de cero
+      // corrupt file: start from scratch
     }
   }
 
@@ -86,7 +86,7 @@ export class Store {
     return c;
   }
 
-  // Devuelve true si el mensaje es nuevo
+  // Returns true if the message is new
   addMsg(chatId, msg) {
     const c = this.chat(chatId);
     if (c.msgs.some((m) => m.id === msg.id)) return false;

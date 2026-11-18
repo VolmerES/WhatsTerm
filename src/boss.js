@@ -1,9 +1,9 @@
-// Sesión de mentira que se reproduce al pulsar Esc (modo jefe): parece que
-// estás pidiéndole cosas a un asistente de código.
+// Fake session that plays when you press Esc (boss mode): it looks like you're
+// asking a coding assistant to do things.
 //
-// No se acaba nunca: encadena varias tareas distintas en orden aleatorio, y
-// cada vez con otras cifras (líneas leídas, tests, tiempos) y otro ritmo. Una
-// vuelta completa a las seis dura unos 4 minutos; después se barajan otra vez.
+// It never ends: it chains several different tasks in random order, each time
+// with different numbers (lines read, tests, timings) and pacing. A full round
+// of all six takes about 4 minutes; then they're shuffled again.
 
 const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const ms = () => `${rnd(9, 160)}ms`;
@@ -11,7 +11,7 @@ const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 const hex = (n) => Array.from({ length: n }, () => rnd(0, 15).toString(16)).join('');
 const today = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
-// ---------- pasos ----------
+// ---------- steps ----------
 const bot = (wait, text) => ({ wait, type: 'bot', text });
 const read = (wait, path, a, b) => ({ wait, type: 'tool', name: 'Read', arg: path, sub: [`Read ${rnd(a, b)} lines`] });
 const search = (wait, pattern, path, files) => ({ wait, type: 'tool', name: 'Search', arg: `pattern: "${pattern}", path: "${path}"`, sub: [`Found ${plural(files, 'file')}`] });
@@ -26,7 +26,7 @@ const update = (wait, path, diff) => {
 };
 const bash = (wait, cmd, sub, error) => ({ wait, type: 'tool', name: 'Bash', arg: cmd, sub, error });
 
-// npm test con vitest: files = [[fichero, nº de tests], ...]
+// npm test with vitest: files = [[file, number of tests], ...]
 const tests = (wait, filter, files) => {
   const total = files.reduce((s, [, n]) => s + n, 0);
   return bash(wait, `npm test${filter ? ' -- ' + filter : ''}`, [
@@ -49,9 +49,9 @@ const migrate = (wait, name) =>
     `✔ Generated Prisma Client (v6.4.1) in ${rnd(80, 240)}ms`,
   ]);
 
-// ---------- tareas ----------
+// ---------- tasks ----------
 const TASKS = [
-  // refactor del middleware de autenticación
+  // auth middleware refactor
   () => {
     const t = rnd(5, 8);
     return {
@@ -103,7 +103,7 @@ const TASKS = [
     };
   },
 
-  // paginación de facturas
+  // invoice pagination
   () => {
     const t = rnd(6, 10);
     return {
@@ -153,7 +153,7 @@ const TASKS = [
     };
   },
 
-  // el rate limiter con Redis caído
+  // rate limiter with Redis down
   () => {
     const t = rnd(4, 6);
     return {
@@ -208,7 +208,7 @@ const TASKS = [
     };
   },
 
-  // webhooks de Stripe procesados dos veces
+  // Stripe webhooks processed twice
   () => {
     const t = rnd(5, 8);
     return {
@@ -245,7 +245,7 @@ const TASKS = [
     };
   },
 
-  // id de petición en los logs
+  // request id in the logs
   () => {
     const id = `${hex(8)}-${hex(4)}-4${hex(3)}-${hex(4)}-${hex(12)}`;
     const calls = rnd(19, 31);
@@ -295,7 +295,7 @@ const TASKS = [
     };
   },
 
-  // la página de pedidos va lenta
+  // slow orders page
   () => {
     const rows = rnd(1500000, 2400000).toLocaleString('en-US');
     const slow = (rnd(3400, 4600) + Math.random()).toFixed(3);
@@ -353,9 +353,9 @@ const shuffle = (a) => {
   return a;
 };
 
-// Sesión sin fin. Cada paso: { wait, entry, touch?, newTask?, idle? }
-// - newTask: empieza otra tarea (se limpian las marcas del explorador)
-// - idle: la tarea ha acabado y se está «escribiendo» la siguiente
+// Endless session. Each step: { wait, entry, touch?, newTask?, idle? }
+// - newTask: a new task starts (the explorer markers are cleared)
+// - idle: the task is done and the next prompt is being "typed"
 export function* bossSession() {
   let last = null;
   let first = true;
@@ -380,8 +380,8 @@ export const SPINNER_VERBS = [
   'Ruminating', 'Deliberating', 'Mulling', 'Synthesizing', 'Computing', 'Working',
 ];
 
-// Árbol de ficheros que enseña el panel lateral en modo jefe. Los que toca la
-// tarea en curso se marcan con ● según los va editando.
+// File tree shown in the side panel in boss mode. Files touched by the current
+// task get a ● as they're edited.
 export const BOSS_TREE = [
   { label: '▾ src', strong: true },
   { label: '  ▾ lib' },

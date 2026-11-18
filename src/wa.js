@@ -1,9 +1,9 @@
-// Conexión con WhatsApp mediante Baileys (cliente no oficial).
-// Configuración conservadora para no llamar la atención:
-//  - no se marca «en línea» al conectar,
-//  - no se pide el historial completo,
-//  - se presenta como WhatsApp de escritorio,
-//  - nada de envíos automáticos: solo se manda lo que escribes tú.
+// Connection to WhatsApp through Baileys (unofficial client).
+// Conservative settings so it doesn't stand out:
+//  - it doesn't mark itself "online" when connecting,
+//  - it doesn't request the full history,
+//  - it identifies as WhatsApp Desktop,
+//  - nothing is sent automatically: only what you type.
 import { EventEmitter } from 'node:events';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -34,8 +34,8 @@ const EXT = {
   'application/pdf': 'pdf',
 };
 
-// Si el mensaje trae un adjunto, devuelve lo necesario para descargarlo más tarde:
-// el mensaje en protobuf (base64), sin la miniatura para no engordar store.json.
+// If the message has an attachment, returns what's needed to download it later:
+// the message as protobuf (base64), without the thumbnail so store.json stays small.
 function mediaOf(m) {
   const content = normalizeMessageContent(m.message);
   const type = content && getContentType(content);
@@ -48,7 +48,7 @@ function mediaOf(m) {
   return { raw: Buffer.from(raw).toString('base64'), ext, fileName: inner.fileName || null };
 }
 
-const IGNORAR = (jid) =>
+const IGNORED = (jid) =>
   !jid || jid === 'status@broadcast' || jid.endsWith('@newsletter') || jid.endsWith('@broadcast');
 
 export function describe(message) {
@@ -62,28 +62,28 @@ export function describe(message) {
     case 'extendedTextMessage':
       return c.text;
     case 'imageMessage':
-      return '[imagen]' + (c.caption ? ' ' + c.caption : '');
+      return '[image]' + (c.caption ? ' ' + c.caption : '');
     case 'videoMessage':
-      return (c.gifPlayback ? '[gif]' : '[vídeo]') + (c.caption ? ' ' + c.caption : '');
+      return (c.gifPlayback ? '[gif]' : '[video]') + (c.caption ? ' ' + c.caption : '');
     case 'audioMessage':
-      return c.ptt ? '[nota de voz]' : '[audio]';
+      return c.ptt ? '[voice note]' : '[audio]';
     case 'stickerMessage':
       return '[sticker]';
     case 'documentMessage':
     case 'documentWithCaptionMessage':
-      return '[documento] ' + (c.fileName ?? c.message?.documentMessage?.fileName ?? '');
+      return '[document] ' + (c.fileName ?? c.message?.documentMessage?.fileName ?? '');
     case 'locationMessage':
     case 'liveLocationMessage':
-      return '[ubicación]';
+      return '[location]';
     case 'contactMessage':
     case 'contactsArrayMessage':
-      return '[contacto] ' + (c.displayName ?? '');
+      return '[contact] ' + (c.displayName ?? '');
     case 'pollCreationMessage':
     case 'pollCreationMessageV2':
     case 'pollCreationMessageV3':
-      return '[encuesta] ' + (c.name ?? '');
+      return '[poll] ' + (c.name ?? '');
     case 'reactionMessage':
-      return c.text ? `[reacción ${c.text}]` : null;
+      return c.text ? `[reaction ${c.text}]` : null;
     case 'protocolMessage':
     case 'senderKeyDistributionMessage':
     case 'messageContextInfo':
@@ -103,7 +103,7 @@ export class WhatsApp extends EventEmitter {
     this.dataDir = dataDir;
     this.authDir = path.join(dataDir, 'auth');
     this.logger = pino({ level: 'warn' }, pino.destination({ dest: path.join(dataDir, 'wa.log'), mkdir: true, sync: false }));
-    this.sent = new Map(); // id -> contenido, para reintentos de cifrado
+    this.sent = new Map(); // id -> content, for encryption retries
     this.sock = null;
     this.stopped = false;
   }
@@ -115,7 +115,7 @@ export class WhatsApp extends EventEmitter {
     try {
       ({ version } = await fetchLatestBaileysVersion());
     } catch {
-      // sin red para consultar la versión: se usa la que trae Baileys
+      // no network to check the version: use the one bundled with Baileys
     }
 
     const sock = makeWASocket({
@@ -135,7 +135,7 @@ export class WhatsApp extends EventEmitter {
     sock.ev.on('connection.update', (u) => {
       if (u.qr) {
         if (this.pairPhone) {
-          // vincular con número: se pide el código una sola vez por conexión
+          // linking by phone number: request the code only once per connection
           if (!this.pairRequested) {
             this.pairRequested = true;
             sock
@@ -160,7 +160,7 @@ export class WhatsApp extends EventEmitter {
         }
         if (this.stopped) return;
         this.emit('status', 'reconnecting');
-        // espera creciente para no martillear los servidores
+        // growing wait so the servers aren't hammered
         this.retries = (this.retries ?? 0) + 1;
         const wait = code === DisconnectReason.restartRequired ? 0 : Math.min(30, 2 ** this.retries) * 1000;
         setTimeout(() => this.start().catch((e) => this.emit('error', e)), wait);
@@ -204,7 +204,7 @@ export class WhatsApp extends EventEmitter {
       this.store.save();
       this.emit('chats');
     } catch {
-      // no es imprescindible
+      // not essential
     }
   }
 
@@ -215,7 +215,7 @@ export class WhatsApp extends EventEmitter {
   }
 
   onChat(ch) {
-    if (IGNORAR(ch.id)) return;
+    if (IGNORED(ch.id)) return;
     const c = this.store.chat(ch.id, {
       name: ch.name || undefined,
       lastTs: ch.conversationTimestamp ? toNumber(ch.conversationTimestamp) * 1000 : undefined,
@@ -226,7 +226,7 @@ export class WhatsApp extends EventEmitter {
 
   onMessage(m, isNew) {
     const k = m.key;
-    if (!k || IGNORAR(k.remoteJid)) return;
+    if (!k || IGNORED(k.remoteJid)) return;
     if (k.remoteJidAlt) this.store.link(k.remoteJid, k.remoteJidAlt);
     let text = describe(m.message);
     if (text == null) return;
@@ -235,11 +235,11 @@ export class WhatsApp extends EventEmitter {
     try {
       media = mediaOf(m);
     } catch {
-      // adjunto raro: se queda solo con el texto
+      // unusual attachment: keep just the text
     }
     const existing = this.store.chat(chatId).msgs.find((x) => x.id === k.id);
     if (existing) {
-      // un mensaje que ya teníamos sin los datos del adjunto (guardado por una versión anterior)
+      // a message we already had without the attachment data (saved by an older version)
       if (media && !existing.media) {
         media.n = ++this.store.mediaSeq;
         existing.media = media;
@@ -274,7 +274,7 @@ export class WhatsApp extends EventEmitter {
     this.emit('message', chatId, msg, isNew);
   }
 
-  // Descarga el adjunto a data/media y devuelve la ruta del fichero
+  // Downloads the attachment to <data>/media and returns the file path
   async download(msg) {
     const dir = path.join(this.dataDir, 'media');
     const file = path.join(dir, `${msg.media.n}-${msg.id}.${msg.media.ext}`);
@@ -282,7 +282,7 @@ export class WhatsApp extends EventEmitter {
     const wm = proto.WebMessageInfo.decode(Buffer.from(msg.media.raw, 'base64'));
     const buf = await downloadMediaMessage(wm, 'buffer', {}, {
       logger: this.logger,
-      // si el enlace ha caducado, se le pide al móvil que lo vuelva a subir
+      // if the link has expired, ask the phone to upload it again
       reuploadRequest: this.sock.updateMediaMessage,
     });
     fs.mkdirSync(dir, { recursive: true });

@@ -1,7 +1,7 @@
-// Interfaz a pantalla completa, como un chat normal de terminal: lista de chats a
-// la izquierda, conversación a la derecha (los tuyos a la derecha, los del otro a
-// la izquierda) y la caja de texto abajo. Colores apagados para no llamar la
-// atención. El disfraz de asistente de código queda para el modo jefe (Esc).
+// Full-screen UI, like a regular terminal chat: chat list on the left, the
+// conversation on the right (yours on the right, theirs on the left) and the
+// text box at the bottom. Muted colors so it doesn't draw attention. The coding
+// assistant disguise is boss mode (Esc).
 import React, { useEffect, useRef, useState } from 'react';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,46 +14,48 @@ import { LineInput } from './input.js';
 import { bossSession, BOSS_TREE, SPINNER_VERBS } from './boss.js';
 
 const h = React.createElement;
-const ACCENT = '#D77757'; // solo para el modo jefe
-const SOFT = '#a8b4c0'; // nombres y marcas, discreto
+const ACCENT = '#D77757'; // boss mode only
+const SOFT = '#a8b4c0'; // names and markers, discreet
 const ME_BG = '#2b2f33';
 const SEL_BG = '#2b2f33';
 const SENDER_COLORS = ['#c9b98a', '#8fa9c9', '#b59ac4', '#86b8b8', '#9fbf8f', '#c98f8f', '#c4a582'];
 const FRAMES = ['·', '✢', '✳', '✶', '✻', '✽', '✻', '✶', '✳', '✢'];
-const GROUP_GAP = 10 * 60_000; // a partir de 10 min sin hablar, se repite el nombre
+const GROUP_GAP = 10 * 60_000; // after 10 min of silence, the sender's name is shown again
+// attachment labels, in English and in Spanish (older versions saved them in Spanish)
+const OLD_MEDIA = /^\[(image|video|gif|audio|voice note|sticker|document|imagen|vídeo|nota de voz|documento)\]/;
 
-// abre un fichero con la aplicación por defecto de Windows (WA_TERMINAL_NO_OPEN=1 lo desactiva, para pruebas)
+// opens a file with the system's default app (WA_TERMINAL_NO_OPEN=1 disables it, for tests)
 const OPEN_CMD = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
 const openFile = (file) => process.env.WA_TERMINAL_NO_OPEN || exec(`${OPEN_CMD} "${file}"`);
 
 const COMMANDS = [
-  ['/open', 'Abrir un chat por nombre: /open ana'],
-  ['/view', 'Abrir un adjunto: /view 3, o el último del chat'],
-  ['/pin', 'Fijar o soltar este chat'],
-  ['/unread', 'Marcar este chat como no leído'],
-  ['/back', 'Cerrar el chat'],
-  ['/bell', 'Pitido de la terminal con los mensajes nuevos'],
-  ['/clear', 'Quitar las notas de la pantalla'],
-  ['/boss', 'Modo jefe (también Esc)'],
-  ['/status', 'Estado de la conexión'],
-  ['/help', 'Comandos y atajos'],
-  ['/logout', 'Desvincular este dispositivo'],
-  ['/exit', 'Salir'],
+  ['/open', 'Open a chat by name: /open ana'],
+  ['/view', 'Open an attachment: /view 3, or the latest in the chat'],
+  ['/pin', 'Pin or unpin this chat'],
+  ['/unread', 'Mark this chat as unread'],
+  ['/back', 'Close the chat'],
+  ['/bell', 'Terminal bell on new messages'],
+  ['/clear', 'Clear notes from the screen'],
+  ['/boss', 'Boss mode (also Esc)'],
+  ['/status', 'Connection status'],
+  ['/help', 'Commands and shortcuts'],
+  ['/logout', 'Unlink this device'],
+  ['/exit', 'Quit'],
 ];
 
 const SHORTCUTS = [
-  ['Tab', 'Pasar de la caja de texto a la lista de chats y vuelta'],
-  ['↑ ↓ / j k', 'En la lista: moverse. Enter: abrir'],
-  ['p · u · r', 'En la lista: fijar · marcar no leído · marcar leído'],
-  ['Ctrl+N / Ctrl+P', 'Chat siguiente / anterior (también Alt+↓ / Alt+↑)'],
-  ['Ctrl+U', 'Siguiente chat con mensajes sin leer'],
-  ['PgUp / PgDn', 'Subir y bajar por la conversación'],
-  ['Ctrl+B', 'Esconder / mostrar la lista'],
-  ['Esc', 'Modo jefe'],
-  ['Ctrl+C', 'Salir'],
+  ['Tab', 'Switch between the text box and the chat list'],
+  ['↑ ↓ / j k', 'In the list: move. Enter: open'],
+  ['p · u · r', 'In the list: pin · mark unread · mark read'],
+  ['Ctrl+N / Ctrl+P', 'Next / previous chat (also Alt+↓ / Alt+↑)'],
+  ['Ctrl+U', 'Next chat with unread messages'],
+  ['PgUp / PgDn', 'Scroll the conversation'],
+  ['Ctrl+B', 'Hide / show the chat list'],
+  ['Esc', 'Boss mode'],
+  ['Ctrl+C', 'Quit'],
 ];
 
-// ---------- utilidades ----------
+// ---------- helpers ----------
 
 const slug = (s) =>
   (s || 'chat')
@@ -63,23 +65,23 @@ const slug = (s) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '') || 'chat';
 
-const hhmm = (ts) => new Date(ts).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+const hhmm = (ts) => new Date(ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 const sameDay = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
 const dayLabel = (ts) => {
-  if (sameDay(ts, Date.now())) return 'hoy';
-  if (sameDay(ts, Date.now() - 86_400_000)) return 'ayer';
-  return new Date(ts).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  if (sameDay(ts, Date.now())) return 'today';
+  if (sameDay(ts, Date.now() - 86_400_000)) return 'yesterday';
+  return new Date(ts).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 };
-// hora si es de hoy, «ayer», o la fecha corta
+// the time if it's today, "yesterday", or the short date
 const when = (ts) => {
   if (!ts) return '';
   if (sameDay(ts, Date.now())) return hhmm(ts);
-  if (sameDay(ts, Date.now() - 86_400_000)) return 'ayer';
-  return new Date(ts).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+  if (sameDay(ts, Date.now() - 86_400_000)) return 'yesterday';
+  return new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
 };
 
 const cut = (s, n) => {
-  // los saltos de línea pasan a espacio; los espacios iniciales (sangría del árbol) se respetan
+  // line breaks become spaces; leading spaces (tree indentation) are kept
   const one = (s || '').replace(/\s*\n\s*/g, ' ');
   if (stringWidth(one) <= n) return one;
   let out = '';
@@ -98,8 +100,8 @@ const colorFor = (jid) => {
   return SENDER_COLORS[x % SENDER_COLORS.length];
 };
 
-// ---------- de entradas a líneas ----------
-// Una línea es una lista de segmentos { text, color, bg, bold, dim }.
+// ---------- from entries to lines ----------
+// A line is a list of segments { text, color, bg, bold, dim }.
 
 function entryLines(e, width) {
   const out = [];
@@ -111,7 +113,7 @@ function entryLines(e, width) {
       out.push([{ text: '─'.repeat(side) + label + '─'.repeat(side), dim: true }]);
       break;
     }
-    // mensajes del otro: a la izquierda, con su nombre en los grupos
+    // their messages: on the left, with the sender's name in groups
     case 'them': {
       if (e.name) out.push([{ text: e.name, color: e.color, bold: true }]);
       for (const it of e.items) {
@@ -124,7 +126,7 @@ function entryLines(e, width) {
       }
       break;
     }
-    // los tuyos: a la derecha, sobre un fondo gris suave
+    // yours: on the right, on a soft grey background
     case 'me': {
       const ls = wrap(e.text, bubble - 9);
       const w = Math.max(...ls.map((l) => stringWidth(l))) + (e.time ? 7 : 0);
@@ -146,7 +148,7 @@ function entryLines(e, width) {
     case 'info':
       wrap(e.text, width).forEach((l) => out.push([{ text: l, dim: !e.color, color: e.color }]));
       break;
-    // lo de abajo es del modo jefe
+    // the ones below are for boss mode
     case 'prompt': {
       wrap(e.text, width - 4).forEach((l, i) => out.push([{ text: (i ? '  ' : '> ') + pad(l, width - 3), bg: '#373737' }]));
       break;
@@ -195,9 +197,9 @@ function chatEntries(store, chat) {
       prevDay = day;
       group = null;
     }
-    // los adjuntos sin número son de antes de poder abrirlos: se indica
-    const text = /^\[[^\]#]+\]/.test(m.text) && !m.media && /^\[(imagen|vídeo|gif|audio|nota de voz|sticker|documento)/.test(m.text)
-      ? m.text.replace(/^\[([^\]]+)\]/, '[$1, no disponible]')
+    // attachments without a number were saved before they could be opened: say so
+    const text = /^\[[^\]#]+\]/.test(m.text) && !m.media && OLD_MEDIA.test(m.text)
+      ? m.text.replace(/^\[([^\]]+)\]/, '[$1, unavailable]')
       : m.text;
     if (m.fromMe) {
       out.push({ type: 'me', text, time: hhmm(m.ts) });
@@ -247,12 +249,12 @@ function Spinner({ verb, start }) {
   );
 }
 
-// ---------- lista lateral ----------
+// ---------- side list ----------
 
-// Chats: dos líneas por chat (nombre y hora; vista previa y no leídos)
+// Chats: two lines per chat (name and time; preview and unread count)
 function ChatList({ chats, store, width, height, selected, openId, focused, typingId }) {
   const inner = width - 2;
-  const per = 3; // dos líneas y una separación
+  const per = 3; // two lines and a gap
   const room = Math.max(1, Math.floor((height - 2) / per));
   const sel = Math.max(0, chats.findIndex((c) => c.id === selected));
   const start = Math.max(0, Math.min(sel - Math.floor(room / 2), chats.length - room));
@@ -270,7 +272,7 @@ function ChatList({ chats, store, width, height, selected, openId, focused, typi
     const name = pad(cut(store.nameOf(c.id), nameW), nameW);
     const badge = c.unread > 0 ? ` ${c.unread > 99 ? '99+' : c.unread} ` : c.markedUnread ? ' ● ' : '';
     const prevW = inner - stringWidth(badge) - 1;
-    let preview = c.id === typingId ? 'escribiendo…' : last ? (last.fromMe ? 'Tú: ' : c.isGroup ? store.nameOf(last.sender).split(' ')[0] + ': ' : '') + last.text : '';
+    let preview = c.id === typingId ? 'typing…' : last ? (last.fromMe ? 'You: ' : c.isGroup ? store.nameOf(last.sender).split(' ')[0] + ': ' : '') + last.text : '';
     preview = pad(cut(preview, prevW), prevW);
     rows.push(
       h(
@@ -302,7 +304,7 @@ function ChatList({ chats, store, width, height, selected, openId, focused, typi
   );
 }
 
-// Modo jefe: árbol de ficheros de mentira
+// Boss mode: fake file tree
 function FakeTree({ width, height, touched }) {
   return h(
     Box,
@@ -337,8 +339,8 @@ export function App({ backend, store, cwd, demo, dataDir }) {
   const [status, setStatus] = useState('connecting');
   const [qr, setQr] = useState(null);
   const [pairing, setPairing] = useState(null);
-  const [typing, setTyping] = useState(null); // id del chat abierto si el otro escribe
-  const [boss, setBoss] = useState(null); // { start, verb, entries }
+  const [typing, setTyping] = useState(null); // id of the open chat when the other side is typing
+  const [boss, setBoss] = useState(null); // { start, verb, entries, touched, idle }
   const [bell, setBell] = useState(false);
   const [, tick] = useState(0);
 
@@ -354,7 +356,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
   const note = (...es) => setNotes((xs) => [...xs, ...es]);
   const refresh = () => tick((x) => x + 1);
 
-  // fijados primero, luego por último mensaje
+  // pinned first, then by latest message
   const chatList = () => {
     const list = store.list();
     return [...list.filter((c) => c.pinned), ...list.filter((c) => !c.pinned)];
@@ -383,7 +385,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
     open(list[i]);
   };
 
-  // ---- eventos del backend ----
+  // ---- backend events ----
   useEffect(() => {
     const onQr = async (code) => {
       setQr((await QRCode.toString(code, { type: 'terminal' })).split('\n'));
@@ -405,7 +407,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
         setPairing(null);
         if (dataDir) fs.rmSync(path.join(dataDir, 'qr.png'), { force: true });
       }
-      if (s === 'loggedOut') note({ type: 'info', text: 'Sesión cerrada. Vuelve a arrancar para vincular.', color: 'red' });
+      if (s === 'loggedOut') note({ type: 'info', text: 'Logged out. Start again to link a device.', color: 'red' });
       refresh();
     };
     const onMessage = (chatId, m, isNew) => {
@@ -436,8 +438,8 @@ export function App({ backend, store, cwd, demo, dataDir }) {
     };
   }, []);
 
-  // ---- modo jefe ----
-  // aplica un paso de la sesión de mentira (ver bossSession en boss.js)
+  // ---- boss mode ----
+  // applies one step of the fake session (see bossSession in boss.js)
   const bossStep = (cur, s) => {
     if (s.newTask) return { ...cur, start: Date.now(), verb: 'Thinking', idle: false, touched: [], entries: [...cur.entries, s.entry].slice(-80) };
     return {
@@ -470,7 +472,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
     if (openRef.current) backend.markRead(openRef.current);
   };
 
-  // ---- teclado ----
+  // ---- keyboard ----
   useInput((input, key) => {
     if (key.escape) return (bossRef.current ? stopBoss : startBoss)();
     if (bossRef.current) return;
@@ -525,7 +527,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
     }
   });
 
-  // ---- comandos ----
+  // ---- commands ----
   const run = async (line) => {
     const [cmd, ...rest] = line.trim().split(/\s+/);
     const arg = rest.join(' ');
@@ -533,10 +535,10 @@ export function App({ backend, store, cwd, demo, dataDir }) {
     switch (cmd) {
       case '/open':
       case '/o': {
-        if (!arg) return note({ type: 'info', text: 'Uso: /open <nombre>' });
+        if (!arg) return note({ type: 'info', text: 'Usage: /open <name>' });
         const q = slug(arg);
         const found = chatList().find((c) => slug(store.nameOf(c.id)).includes(q));
-        if (!found) return note({ type: 'info', text: `Ningún chat coincide con «${arg}»`, color: 'yellow' });
+        if (!found) return note({ type: 'info', text: `No chat matches "${arg}"`, color: 'yellow' });
         return open(found);
       }
       case '/chats':
@@ -554,40 +556,40 @@ export function App({ backend, store, cwd, demo, dataDir }) {
         if (arg) m = store.findMedia(Number(arg.replace('#', '')));
         else m = chat && [...chat.msgs].reverse().find((x) => x.media);
         if (!m) {
-          const old = chat && chat.msgs.some((x) => !x.media && /^\[(imagen|vídeo|gif|audio|nota de voz|sticker|documento)\]/.test(x.text));
+          const old = chat && chat.msgs.some((x) => !x.media && OLD_MEDIA.test(x.text));
           return note({
             type: 'info',
             color: 'yellow',
             text: arg
-              ? `No hay ningún adjunto #${arg}`
+              ? `There is no attachment #${arg}`
               : old
-                ? 'Los adjuntos de este chat son de antes de poder abrirlos («no disponible»). Los que lleguen a partir de ahora sí se abren.'
-                : 'No hay adjuntos en este chat',
+                ? "This chat's attachments were saved before they could be opened (\"unavailable\"). New ones will open fine."
+                : 'No attachments in this chat',
           });
         }
         const label = m.media.fileName || `#${m.media.n}`;
-        note({ type: 'info', text: `Descargando ${label}…` });
+        note({ type: 'info', text: `Downloading ${label}…` });
         try {
           openFile(await backend.download(m));
-          return note({ type: 'info', text: `Abierto ${label} en el visor` });
+          return note({ type: 'info', text: `Opened ${label} in the viewer` });
         } catch (err) {
-          return note({ type: 'info', text: `No se pudo abrir ${label}: ${err?.message || err}`, color: 'red' });
+          return note({ type: 'info', text: `Couldn't open ${label}: ${err?.message || err}`, color: 'red' });
         }
       }
       case '/pin':
-        if (!chat) return note({ type: 'info', text: 'No hay ningún chat abierto' });
+        if (!chat) return note({ type: 'info', text: 'No chat is open' });
         chat.pinned = !chat.pinned;
         store.save();
         return refresh();
       case '/unread':
-        if (!chat) return note({ type: 'info', text: 'No hay ningún chat abierto' });
+        if (!chat) return note({ type: 'info', text: 'No chat is open' });
         chat.markedUnread = true;
         store.save();
         setOpenId(null);
         return refresh();
       case '/bell':
         setBell((b) => !b);
-        return note({ type: 'info', text: `Pitido con los mensajes nuevos: ${bell ? 'apagado' : 'encendido'}` });
+        return note({ type: 'info', text: `Bell on new messages: ${bell ? 'off' : 'on'}` });
       case '/clear':
         return setNotes([]);
       case '/boss':
@@ -595,11 +597,11 @@ export function App({ backend, store, cwd, demo, dataDir }) {
       case '/help':
       case '/?':
         return note(
-          { type: 'note', title: 'Comandos', lines: COMMANDS.map(([c, d]) => `${c.padEnd(9)} ${d}`) },
-          { type: 'note', title: 'Atajos', lines: SHORTCUTS.map(([c, d]) => `${c.padEnd(16)} ${d}`) },
+          { type: 'note', title: 'Commands', lines: COMMANDS.map(([c, d]) => `${c.padEnd(9)} ${d}`) },
+          { type: 'note', title: 'Shortcuts', lines: SHORTCUTS.map(([c, d]) => `${c.padEnd(16)} ${d}`) },
         );
       case '/status':
-        return note({ type: 'note', title: 'Estado', lines: [`conexión: ${status}`, `chats: ${store.list().length}`, demo ? 'modo: demo' : 'modo: real'] });
+        return note({ type: 'note', title: 'Status', lines: [`connection: ${status}`, `chats: ${store.list().length}`, demo ? 'mode: demo' : 'mode: live'] });
       case '/logout':
         await backend.logout();
         return exit();
@@ -607,7 +609,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
       case '/quit':
         return exit();
       default:
-        return note({ type: 'info', text: `No existe ${cmd}. /help para ver los comandos`, color: 'yellow' });
+        return note({ type: 'info', text: `Unknown command ${cmd}. /help lists them`, color: 'yellow' });
     }
   };
 
@@ -616,49 +618,49 @@ export function App({ backend, store, cwd, demo, dataDir }) {
     setValue('');
     if (!text) return;
     if (bossRef.current) {
-      // en modo jefe nunca se envía nada a WhatsApp
+      // nothing is ever sent to WhatsApp in boss mode
       setBoss((b) => b && { ...b, entries: [...b.entries, { type: 'prompt', text }] });
       return;
     }
     if (text === '?') return run('/help');
     if (text.startsWith('/')) return run(text);
-    if (!openRef.current) return note({ type: 'info', text: 'No hay ningún chat abierto. Tab para elegir uno de la lista, o /open <nombre>' });
+    if (!openRef.current) return note({ type: 'info', text: 'No chat is open. Tab to pick one from the list, or /open <name>' });
     setScroll(0);
     try {
       await backend.send(openRef.current, text);
     } catch (err) {
-      note({ type: 'info', text: 'Error al enviar: ' + (err?.message || err), color: 'red' });
+      note({ type: 'info', text: "Couldn't send: " + (err?.message || err), color: 'red' });
     }
   };
 
-  // ---------- composición ----------
+  // ---------- layout ----------
   const sideW = showSide ? Math.max(24, Math.min(38, Math.floor(columns * 0.3))) : 0;
   const paneW = columns - sideW - 3;
-  const mainH = Math.max(5, rows - 5); // estado (1) + caja de texto (3) + pie (1)
+  const mainH = Math.max(5, rows - 5); // status (1) + text box (3) + footer (1)
   const openChat = openId ? store.chat(openId) : null;
 
-  // cabecera y contenido de la derecha
+  // header and content of the right pane
   let title;
   let entries;
   if (boss) {
     title = [{ text: ' ' }];
     entries = boss.entries;
   } else if (pairing) {
-    title = [{ text: 'Vincular dispositivo', bold: true }];
+    title = [{ text: 'Link a device', bold: true }];
     entries = [
-      { type: 'info', text: 'En el móvil: Ajustes → Dispositivos vinculados → Vincular un dispositivo → Vincular con el número de teléfono' },
-      { type: 'note', title: 'Código', lines: [pairing] },
+      { type: 'info', text: 'On your phone: Settings → Linked devices → Link a device → Link with phone number instead' },
+      { type: 'note', title: 'Code', lines: [pairing] },
     ];
   } else if (qr) {
-    title = [{ text: 'Vincular dispositivo', bold: true }];
+    title = [{ text: 'Link a device', bold: true }];
     entries = [
-      { type: 'info', text: `Escanea con WhatsApp → Ajustes → Dispositivos vinculados. También como imagen en ${path.join(dataDir || '', 'qr.png')} (se renueva cada ~20 s). Sin QR: whatsterm --pair=34XXXXXXXXX` },
+      { type: 'info', text: `Scan with WhatsApp → Settings → Linked devices. Also saved as an image at ${path.join(dataDir || '', 'qr.png')} (refreshes every ~20 s). No QR: whatsterm --pair=<number with country code>` },
       { type: 'raw', lines: qr },
     ];
   } else if (openChat) {
     title = [
       { text: store.nameOf(openChat.id), bold: true },
-      typing ? { text: '  escribiendo…', color: SOFT, italic: true } : { text: openChat.isGroup ? '  grupo' : '', dim: true },
+      typing ? { text: '  typing…', color: SOFT, italic: true } : { text: openChat.isGroup ? '  group' : '', dim: true },
     ];
     entries = [...chatEntries(store, openChat), ...notes];
   } else {
@@ -666,8 +668,8 @@ export function App({ backend, store, cwd, demo, dataDir }) {
     const pending = store.totalUnread();
     entries = [
       ...(status === 'open' || demo
-        ? [{ type: 'info', text: `Elige un chat: Tab para ir a la lista, Ctrl+N para el siguiente${pending ? `, Ctrl+U para los ${pending} sin leer` : ''}. /help para ver todo.` }]
-        : [{ type: 'info', text: 'Conectando…' }]),
+        ? [{ type: 'info', text: `Pick a chat: Tab to go to the list, Ctrl+N for the next one${pending ? `, Ctrl+U for the ${pending} unread` : ''}. /help for everything.` }]
+        : [{ type: 'info', text: 'Connecting…' }]),
       ...notes,
     ];
   }
@@ -677,29 +679,29 @@ export function App({ backend, store, cwd, demo, dataDir }) {
   const maxScroll = Math.max(0, lines.length - bodyH);
   const sc = Math.min(scroll, maxScroll);
   const visible = lines.slice(Math.max(0, lines.length - bodyH - sc), lines.length - sc);
-  // los mensajes se pegan abajo, como en cualquier chat
+  // messages stick to the bottom, like in any chat
   while (visible.length < bodyH) visible.unshift([]);
 
-  // línea de estado
+  // status line
   let statusLine = null;
   if (boss) statusLine = boss.idle ? null : h(Spinner, { verb: boss.verb, start: boss.start });
-  else if (sc > 0) statusLine = h(Text, { dimColor: true }, `↓ ${sc} líneas más abajo · PgDn`);
+  else if (sc > 0) statusLine = h(Text, { dimColor: true }, `↓ ${sc} more lines below · PgDn`);
 
-  // pie
+  // footer
   const others = store.totalUnread(openId && store.resolve(openId));
   const suggestion = value.startsWith('/') && !value.includes(' ') ? COMMANDS.find(([c]) => c.startsWith(value)) : null;
   let right = null;
   if (boss) right = others > 0 ? h(Text, { color: ACCENT }, `● ${others} background task${others === 1 ? '' : 's'}`) : null;
-  else if (status === 'connecting' || status === 'reconnecting') right = h(Text, { dimColor: true }, status === 'connecting' ? 'conectando…' : 'reconectando…');
-  else if (status === 'loggedOut') right = h(Text, { color: 'red' }, 'desvinculado');
-  else if (others > 0) right = h(Text, { color: SOFT }, `${others} sin leer en otros chats`);
+  else if (status === 'connecting' || status === 'reconnecting') right = h(Text, { dimColor: true }, status === 'connecting' ? 'connecting…' : 'reconnecting…');
+  else if (status === 'loggedOut') right = h(Text, { color: 'red' }, 'logged out');
+  else if (others > 0) right = h(Text, { color: SOFT }, `${others} unread in other chats`);
   const left = boss
     ? h(Text, { dimColor: true }, '? for shortcuts')
     : suggestion
       ? h(Text, null, h(Text, { color: SOFT }, suggestion[0] + '  '), h(Text, { dimColor: true }, suggestion[1]))
       : focus === 'side'
-        ? h(Text, { dimColor: true }, '↑↓ moverse · enter abrir · p fijar · u no leído · r leído · tab volver')
-        : h(Text, { dimColor: true }, 'tab chats · ctrl+n/p cambiar · ctrl+u sin leer · ? ayuda · esc ocultar');
+        ? h(Text, { dimColor: true }, '↑↓ move · enter open · p pin · u unread · r read · tab back')
+        : h(Text, { dimColor: true }, 'tab chats · ctrl+n/p switch · ctrl+u unread · ? help · esc hide');
 
   return h(
     Box,
@@ -725,7 +727,7 @@ export function App({ backend, store, cwd, demo, dataDir }) {
       Box,
       { borderStyle: 'round', borderColor: focus === 'input' ? 'gray' : '#3a3a3a', paddingX: 1, flexDirection: 'row', height: 3 },
       h(Text, { dimColor: focus !== 'input' }, '> '),
-      h(Box, { flexGrow: 1 }, h(LineInput, { value, onChange: setValue, onSubmit: submit, focus: focus === 'input', placeholder: boss ? '' : openChat ? 'Escribe un mensaje' : '' })),
+      h(Box, { flexGrow: 1 }, h(LineInput, { value, onChange: setValue, onSubmit: submit, focus: focus === 'input', placeholder: boss ? '' : openChat ? 'Type a message' : '' })),
     ),
     h(Box, { paddingX: 2, height: 1, justifyContent: 'space-between' }, h(Box, { flexShrink: 1 }, left), right),
   );

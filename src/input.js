@@ -1,5 +1,5 @@
-// Campo de texto de una línea. Propio, en vez de ink-text-input, para que los
-// atajos (Ctrl+N, Alt+↑…) no acaben escritos dentro del mensaje.
+// Single-line text field. Our own instead of ink-text-input, so shortcuts
+// (Ctrl+N, Alt+↑…) don't end up typed into the message.
 import React, { useState } from 'react';
 import { Text, useInput } from 'ink';
 
@@ -25,7 +25,7 @@ export function LineInput({ value, onChange, onSubmit, focus, placeholder }) {
         onChange(value.slice(0, pos - 1) + value.slice(pos));
         return setCursor(pos - 1);
       }
-      // Ctrl+W: borrar la palabra anterior
+      // Ctrl+W: delete the previous word
       if (key.ctrl && input === 'w') {
         const before = value.slice(0, pos).replace(/\S+\s*$/, '');
         onChange(before + value.slice(pos));

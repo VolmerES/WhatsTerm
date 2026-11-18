@@ -1,10 +1,10 @@
-// Saca las capturas del README a partir de la demo (nunca de chats reales).
-// Arranca la app en una terminal simulada, pulsa teclas, pasa cada pantalla con
-// sus colores a HTML y la fotografía con el Chrome instalado (puppeteer-core).
+// Takes the README screenshots from the demo (never from real chats).
+// Runs the app in a simulated terminal, presses keys, turns each screen into
+// colored HTML and photographs it with the installed Chrome (puppeteer-core).
 //
-//   npm run capturas
+//   npm run screenshots
 //
-// Deja los PNG en docs/capturas/. CHROME_PATH permite usar otro navegador.
+// Writes the PNGs to docs/screenshots/. CHROME_PATH lets you use another browser.
 process.env.FORCE_COLOR = '3';
 process.env.WA_TERMINAL_NO_OPEN = '1';
 
@@ -20,7 +20,7 @@ const { App } = await import('../src/ui.js');
 const puppeteer = (await import('puppeteer-core')).default;
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const outDir = path.join(root, 'docs', 'capturas');
+const outDir = path.join(root, 'docs', 'screenshots');
 fs.mkdirSync(outDir, { recursive: true });
 
 const COLS = 112;
@@ -29,7 +29,7 @@ const CHROME =
   process.env.CHROME_PATH ||
   ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find((p) => fs.existsSync(p));
 
-// ---------- terminal simulada ----------
+// ---------- simulated terminal ----------
 const stdin = new PassThrough();
 Object.assign(stdin, { isTTY: true, setRawMode() {}, ref() {}, unref() {} });
 let frame = '';
@@ -55,7 +55,7 @@ const type = async (s, enter = true) => {
   if (enter) await key('\r');
 };
 
-// ---------- ANSI a HTML ----------
+// ---------- ANSI to HTML ----------
 const BASIC = ['#0c0c0c', '#c50f1f', '#13a10e', '#c19c00', '#0037da', '#881798', '#3a96dd', '#cccccc'];
 const BRIGHT = ['#767676', '#e74856', '#16c60c', '#f9f1a5', '#3b78ff', '#b4009e', '#61d6d6', '#f2f2f2'];
 const FG = '#cccccc';
@@ -140,35 +140,35 @@ const shots = [];
 const shot = (name) => {
   const lines = frame.replace(/\n+$/, '').split('\n').slice(-ROWS);
   shots.push({ name, html: page(lines.map(ansiToHtml).join('\n'), 'claude') });
-  console.log('capturada', name);
+  console.log('captured', name);
 };
 
-// ---------- guion ----------
+// ---------- script ----------
 await wait(700);
-shot('01-inicio');
-await key('\x15'); // Ctrl+U: siguiente sin leer (Ana)
-await type('¿pido yo?');
-await wait(2000); // la demo contesta: «escribiendo…»
+shot('01-start');
+await key('\x15'); // Ctrl+U: next unread (Anna)
+await type('shall I order?');
+await wait(2000); // the demo replies: typing…
 shot('02-chat');
 await wait(2600);
-await key('\x15'); // Familia
+await key('\x15'); // Family
 await type('/view');
-shot('03-grupo');
+shot('03-group');
 await key('\t');
 await key('\x1b[B');
 await key('\x1b[B');
-shot('04-lista');
+shot('04-list');
 await key('\t');
 await type('?');
-shot('05-ayuda');
+shot('05-help');
 await type('/clear');
-await key('\x1b'); // modo jefe
+await key('\x1b'); // boss mode
 await wait(9500);
-shot('06-modo-jefe');
+shot('06-boss-mode');
 await key('\x1b');
 app.unmount();
 
-// ---------- fotos ----------
+// ---------- photos ----------
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--hide-scrollbars'] });
 const tab = await browser.newPage();
 await tab.setViewport({ width: 1400, height: 900, deviceScaleFactor: 2 });
@@ -178,7 +178,7 @@ for (const s of shots) {
   const box = await el.boundingBox();
   const file = path.join(outDir, s.name + '.png');
   await tab.screenshot({ path: file, clip: { x: box.x - 28, y: box.y - 28, width: box.width + 56, height: box.height + 56 } });
-  console.log('guardada', path.relative(root, file));
+  console.log('saved', path.relative(root, file));
 }
 await browser.close();
 process.exit(0);

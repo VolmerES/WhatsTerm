@@ -1,318 +1,321 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/marca/banner.png" alt="WhatsTerm: tu WhatsApp, en la terminal. Pulsa Esc y parece que estás trabajando." width="880">
+  <img src="https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/brand/banner.png" alt="WhatsTerm: your WhatsApp, in the terminal. Press Esc and it looks like you're working." width="880">
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/whatsterm"><img src="https://img.shields.io/npm/v/whatsterm?color=25D366&label=npm" alt="Versión en npm"></a>
-  <img src="https://img.shields.io/node/v/whatsterm?color=25D366" alt="Node.js 22 o posterior">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-25D366" alt="Licencia MIT"></a>
+  <a href="https://www.npmjs.com/package/whatsterm"><img src="https://img.shields.io/npm/v/whatsterm?color=25D366&label=npm" alt="npm version"></a>
+  <img src="https://img.shields.io/node/v/whatsterm?color=25D366" alt="Node.js 22 or later">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-25D366" alt="MIT license"></a>
 </p>
 
 <p align="center">
-  <b>Tu WhatsApp, en la terminal.</b> Un chat sobrio, en negro y con colores apagados,<br>
-  que en una oficina pasa por una herramienta de desarrollo más.<br>
-  Si alguien se acerca, <b>Esc</b> lo tapa todo con una sesión de Claude Code de mentira.
+  <b>Your WhatsApp, in the terminal.</b> A sober chat, black with muted colors,<br>
+  that passes for just another dev tool at the office.<br>
+  If someone walks by, <b>Esc</b> covers everything with a fake Claude Code session.
 </p>
 
 > [!WARNING]
-> **WhatsTerm es un cliente no oficial.** No tiene ninguna relación con WhatsApp
-> ni con Meta, ni está respaldado por ellos; WhatsApp es una marca de WhatsApp
-> LLC. Usa [Baileys](https://github.com/WhiskeySockets/Baileys) y eso va contra
-> las condiciones de WhatsApp: **puede acabar en baneo del número**. Lee
-> [Riesgo](#riesgo) antes de usarlo.
+> **WhatsTerm is an unofficial client.** It is not affiliated with, endorsed by
+> or connected to WhatsApp or Meta; WhatsApp is a trademark of WhatsApp LLC. It
+> uses [Baileys](https://github.com/WhiskeySockets/Baileys), which goes against
+> WhatsApp's Terms of Service: **your number could get banned**. Read
+> [Risk](#risk) before using it.
 
-## Empezar
+## Getting started
 
 ```sh
-npm install -g whatsterm   # hace falta Node.js 22 o posterior
-whatsterm --demo           # pruébalo con chats de mentira, sin vincular nada
-whatsterm                  # el de verdad: escanea el QR con el móvil y listo
+npm install -g whatsterm   # requires Node.js 22 or later
+whatsterm --demo           # try it with fake chats, nothing to link
+whatsterm                  # the real thing: scan the QR with your phone and you're in
 ```
 
-También se puede lanzar como `wat`, más corto y más discreto.
+You can also launch it as `wat`, shorter and more discreet.
 
-![Una conversación](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/02-chat.png)
+![A conversation](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/screenshots/02-chat.png)
 
-## Qué hace
+## Features
 
 | | |
 |---|---|
-| **Chats como en el móvil** | Lista con nombre, hora, vista previa y mensajes sin leer. Los tuyos a la derecha, los del otro a la izquierda; en los grupos, cada persona con su color |
-| **«escribiendo…»** | Ves cuándo el otro está escribiendo |
-| **Adjuntos** | Fotos, vídeos, audios y documentos, que se abren con la aplicación del sistema |
-| **Solo teclado** | Atajos para moverse entre chats, fijarlos y marcarlos sin tocar el ratón |
-| **Modo jefe** | **Esc** y la pantalla pasa a ser un refactor en curso. Otro **Esc** y vuelves |
-| **Sin rastro** | Al salir, la terminal vuelve a como estaba, sin los mensajes en el historial |
+| **Chats like on your phone** | A list with name, time, preview and unread count. Yours on the right, theirs on the left; in groups, each person gets their own color |
+| **"typing…"** | You can see when the other person is typing |
+| **Attachments** | Photos, videos, audio and documents, opened with your system's default app |
+| **Keyboard only** | Shortcuts to move between chats, pin them and mark them without touching the mouse |
+| **Boss mode** | **Esc** and the screen turns into a coding agent at work. **Esc** again and you're back |
+| **No trace** | When you quit, the terminal goes back to how it was, with no messages left in the scrollback |
 
-![Modo jefe](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/06-modo-jefe.png)
+![Boss mode](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/screenshots/06-boss-mode.png)
 
-## Índice
+## Contents
 
-- [Instalar y actualizar](#instalar-y-actualizar)
-- [Vincular el móvil](#vincular-el-móvil)
-- [Uso](#uso)
-- [Atajos de teclado](#atajos-de-teclado)
-- [Comandos](#comandos)
-- [Adjuntos](#adjuntos)
-- [Modo jefe](#modo-jefe)
-- [Riesgo](#riesgo)
-- [Datos en disco](#datos-en-disco)
-- [Preguntas frecuentes](#preguntas-frecuentes)
-- [Contribuir](#contribuir)
-- [Desarrollo](#desarrollo)
+- [Install and update](#install-and-update)
+- [Link your phone](#link-your-phone)
+- [Usage](#usage)
+- [Keyboard shortcuts](#keyboard-shortcuts)
+- [Commands](#commands)
+- [Attachments](#attachments)
+- [Boss mode](#boss-mode)
+- [Risk](#risk)
+- [Data on disk](#data-on-disk)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [Development](#development)
 
-## Instalar y actualizar
+## Install and update
 
-Hace falta **Node.js 22 o posterior** ([nodejs.org](https://nodejs.org)).
+Requires **Node.js 22 or later** ([nodejs.org](https://nodejs.org)).
 
 ```sh
-npm install -g whatsterm          # instalar
-npm install -g whatsterm@latest   # actualizar
-npm uninstall -g whatsterm        # desinstalar
-whatsterm --version               # qué versión tienes
+npm install -g whatsterm          # install
+npm install -g whatsterm@latest   # update
+npm uninstall -g whatsterm        # uninstall
+whatsterm --version               # which version you have
 ```
 
-Ni actualizar ni desinstalar borran la sesión ni los mensajes (ver
-[Datos en disco](#datos-en-disco)). Está hecho y probado en **Windows**
-(Windows Terminal); en Mac y Linux debería funcionar, pero está menos probado.
+Neither updating nor uninstalling deletes your session or messages (see
+[Data on disk](#data-on-disk)). It's built and tested on **Windows** (Windows
+Terminal); it should work on macOS and Linux, but those are less tested.
 
-## Vincular el móvil
+## Link your phone
 
 ```sh
 whatsterm
 ```
 
-La primera vez sale un QR. En el móvil: **Ajustes → Dispositivos vinculados →
-Vincular un dispositivo**, y lo escaneas.
+The first time, a QR code shows up. On your phone: **Settings → Linked devices →
+Link a device**, and scan it.
 
-- El QR sale en la terminal, que tiene que medir al menos 70 columnas y unas 45
-  filas. Además se abre solo como imagen, `qr.png` en la carpeta de datos, que
-  es lo que mejor se escanea.
-- El QR cambia cada ~20 segundos. Si la imagen abierta ya no vale, vuelve a
-  abrir `qr.png`.
-- **Sin QR**: vincula con tu número (con prefijo, sin `+`):
+- The QR is drawn in the terminal, which needs to be at least 70 columns by
+  about 45 rows. It also opens on its own as an image, `qr.png` in the data
+  folder, which is the easiest to scan.
+- The QR changes every ~20 seconds. If the open image no longer works, open
+  `qr.png` again.
+- **No QR**: link with your phone number (with country code, no `+`):
 
   ```sh
-  whatsterm --pair=34600111222
+  whatsterm --pair=14155550123
   ```
 
-  En la terminal sale un código de 8 letras. En el móvil: **Vincular un
-  dispositivo → Vincular con el número de teléfono**, y lo escribes.
+  An 8-letter code shows up in the terminal. On your phone: **Link a device →
+  Link with phone number instead**, and type it in.
 
-La sesión se guarda en `auth/`, dentro de la carpeta de datos. Las siguientes veces entra directamente.
+The session is saved in `auth/`, inside the data folder. After that, it connects straight away.
 
-## Uso
+## Usage
 
-![Al arrancar](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/01-inicio.png)
+![On startup](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/screenshots/01-start.png)
 
-A la izquierda, la lista de chats; a la derecha, la conversación; abajo, la caja
-de texto. Para empezar:
+The chat list is on the left, the conversation on the right and the text box at
+the bottom. To get started:
 
-1. **Ctrl+U** abre el siguiente chat con mensajes sin leer.
-2. O **Tab** para ir a la lista, **↑ ↓** para elegir y **Enter** para abrir.
-3. O `/open ana` para abrirlo por nombre.
+1. **Ctrl+U** opens the next chat with unread messages.
+2. Or **Tab** to go to the list, **↑ ↓** to choose and **Enter** to open.
+3. Or `/open anna` to open it by name.
 
-Con un chat abierto, lo que escribas en la caja y mandes con Enter **se envía**.
-Arriba de la conversación siempre sale con quién estás hablando.
+With a chat open, whatever you type in the box and send with Enter **is sent**.
+The top of the conversation always shows who you're talking to.
 
-Al abrir un chat, sus mensajes se marcan como leídos en WhatsApp (salen los
-ticks azules, si los tienes activados).
+Opening a chat marks its messages as read on WhatsApp (blue ticks, if you have
+them turned on).
 
-![Un grupo](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/03-grupo.png)
+![A group](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/screenshots/03-group.png)
 
-### En la lista de chats
+### In the chat list
 
-![La lista con el foco](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/04-lista.png)
+![The list with focus](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/screenshots/04-list.png)
 
-| Marca | Qué significa |
+| Marker | Meaning |
 |---|---|
-| **Nombre en negrita** y número | Mensajes sin leer, y cuántos |
-| `●` | Lo marcaste como no leído |
-| `◆` | Fijado: va siempre arriba |
-| *escribiendo…* | El otro está escribiendo ahora |
-| Fondo gris | El chat abierto o el seleccionado |
+| **Bold name** and a number | Unread messages, and how many |
+| `●` | You marked it as unread |
+| `◆` | Pinned: always at the top |
+| *typing…* | The other person is typing right now |
+| Grey background | The open or selected chat |
 
-Abajo a la derecha sale cuántos mensajes sin leer tienes en otros chats.
+The bottom right shows how many unread messages you have in other chats.
 
-La pestaña de la terminal pasa a llamarse `claude` mientras está abierto.
+The terminal tab is renamed to `claude` while it's running.
 
-## Atajos de teclado
+## Keyboard shortcuts
 
-| Tecla | Dónde | Qué hace |
+| Key | Where | What it does |
 |---|---|---|
-| **Tab** | siempre | Pasa de la caja de texto a la lista de chats, y vuelta |
-| **↑ ↓** o **j k** | lista | Moverse por los chats |
-| **Enter** | lista | Abrir el chat seleccionado |
-| **→** | lista | Volver a la caja de texto |
-| **p** | lista | Fijar o soltar el chat (va arriba del todo) |
-| **u** | lista | Marcar como no leído |
-| **r** | lista | Marcar como leído |
-| **Ctrl+N** / **Alt+↓** | siempre | Abrir el chat siguiente de la lista |
-| **Ctrl+P** / **Alt+↑** | siempre | Abrir el chat anterior |
-| **Ctrl+U** | siempre | Abrir el siguiente chat con mensajes sin leer |
-| **PgUp** / **PgDn** | siempre | Subir y bajar por la conversación |
-| **Ctrl+B** | siempre | Esconder o mostrar la lista de chats |
-| **Esc** | siempre | Modo jefe, y vuelta |
-| **Ctrl+C** | siempre | Salir |
+| **Tab** | anywhere | Switches between the text box and the chat list |
+| **↑ ↓** or **j k** | list | Move through the chats |
+| **Enter** | list | Open the selected chat |
+| **→** | list | Back to the text box |
+| **p** | list | Pin or unpin the chat (goes to the top) |
+| **u** | list | Mark as unread |
+| **r** | list | Mark as read |
+| **Ctrl+N** / **Alt+↓** | anywhere | Open the next chat in the list |
+| **Ctrl+P** / **Alt+↑** | anywhere | Open the previous chat |
+| **Ctrl+U** | anywhere | Open the next chat with unread messages |
+| **PgUp** / **PgDn** | anywhere | Scroll the conversation |
+| **Ctrl+B** | anywhere | Hide or show the chat list |
+| **Esc** | anywhere | Boss mode, and back |
+| **Ctrl+C** | anywhere | Quit |
 
-En la caja de texto: **← →** mueven el cursor, **Inicio / Fin** (o **Ctrl+A /
-Ctrl+E**) van al principio y al final, y **Ctrl+W** borra la palabra anterior.
+In the text box: **← →** move the cursor, **Home / End** (or **Ctrl+A /
+Ctrl+E**) jump to the start and end, and **Ctrl+W** deletes the previous word.
 
-Fijar y marcar como leído o no leído desde la lista es **solo en local**: no
-cambia nada en el móvil. La excepción es **r**, que además manda la confirmación
-de lectura.
+Pinning and marking as read or unread from the list is **local only**: nothing
+changes on your phone. The exception is **r**, which also sends the read receipt.
 
-## Comandos
+## Commands
 
-Se escriben en la caja de texto. Al escribir `/` aparece una sugerencia del
-comando abajo.
+Type them in the text box. When you type `/`, a suggestion for the command shows
+up at the bottom.
 
-![La ayuda](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/capturas/05-ayuda.png)
+![Help](https://raw.githubusercontent.com/VolmerES/WhatsTerm/main/docs/screenshots/05-help.png)
 
-| Comando | Atajo | Qué hace |
+| Command | Short | What it does |
 |---|---|---|
-| `/open <nombre>` | `/o` | Abre el primer chat cuyo nombre contenga ese texto. Sin tildes ni mayúsculas: `/open lucia` abre «Lucía» |
-| `/view [n]` | `/v` | Descarga y abre un adjunto. Sin número, el último del chat abierto; con número, ese: `/view 3` abre el `[imagen #3]` |
-| `/pin` | | Fija o suelta el chat abierto |
-| `/unread` | | Marca el chat abierto como no leído y lo cierra |
-| `/back` | `/b` | Cierra el chat abierto |
-| `/chats` | `/c` | Va a la lista de chats (como **Tab**) |
-| `/bell` | | Enciende o apaga el pitido de la terminal con los mensajes nuevos de otros chats. Viene apagado |
-| `/clear` | | Quita de la pantalla las notas (ayuda, avisos, errores) |
-| `/boss` | | Modo jefe (como **Esc**) |
-| `/status` | | Estado de la conexión y número de chats |
-| `/help` | `?` | Comandos y atajos |
-| `/logout` | | Desvincula este ordenador de tu WhatsApp y borra la sesión |
-| `/exit` | `/quit` | Salir (como **Ctrl+C**) |
+| `/open <name>` | `/o` | Opens the first chat whose name contains that text. Accents and case don't matter: `/open lucia` opens "Lucía" |
+| `/view [n]` | `/v` | Downloads and opens an attachment. Without a number, the latest in the open chat; with a number, that one: `/view 3` opens `[image #3]` |
+| `/pin` | | Pins or unpins the open chat |
+| `/unread` | | Marks the open chat as unread and closes it |
+| `/back` | `/b` | Closes the open chat |
+| `/chats` | `/c` | Goes to the chat list (like **Tab**) |
+| `/bell` | | Turns the terminal bell for new messages in other chats on or off. Off by default |
+| `/clear` | | Clears notes from the screen (help, notices, errors) |
+| `/boss` | | Boss mode (like **Esc**) |
+| `/status` | | Connection status and number of chats |
+| `/help` | `?` | Commands and shortcuts |
+| `/logout` | | Unlinks this computer from your WhatsApp and deletes the session |
+| `/exit` | `/quit` | Quit (like **Ctrl+C**) |
 
-## Adjuntos
+## Attachments
 
-Fotos, vídeos, audios, notas de voz, stickers y documentos salen en la
-conversación con un número: `[imagen #3] mira qué cola hay`.
+Photos, videos, audio, voice notes, stickers and documents show up in the
+conversation with a number: `[image #3] look at this queue`.
 
-- `/view` abre el último del chat; `/view 3`, el `#3`.
-- Se descargan a `media/`, en la carpeta de datos, y se abren con la aplicación
-  que tenga el sistema para ese tipo de fichero. La segunda vez ya no se descargan.
-- Si un adjunto es antiguo y WhatsApp ya no lo tiene en sus servidores, se le
-  pide al móvil que lo vuelva a subir; para eso tiene que estar encendido.
-- Los que salen como `[imagen, no disponible]` se guardaron con una versión
-  anterior del programa, sin los datos para descargarlos, y no se pueden abrir.
+- `/view` opens the latest one in the chat; `/view 3`, number `#3`.
+- They're downloaded to `media/`, in the data folder, and opened with your
+  system's default app for that file type. The second time, they're not
+  downloaded again.
+- If an attachment is old and WhatsApp no longer has it on its servers, the
+  phone is asked to upload it again; for that it needs to be on.
+- The ones shown as `[image, unavailable]` were saved by an older version of the
+  program without the data needed to download them, and can't be opened.
 
-## Modo jefe
+## Boss mode
 
-**Esc** cambia la pantalla entera a una sesión de Claude Code de mentira: un
-árbol de ficheros a la izquierda y, a la derecha, un agente que trabaja solo,
-con búsquedas, lecturas de ficheros, diffs y tests en verde, y el spinner de
-«Thinking…» abajo. Otro **Esc** devuelve el chat como estaba.
+**Esc** switches the whole screen to a fake Claude Code session: a file tree on
+the left and, on the right, an agent working on its own, with searches, file
+reads, diffs and green tests, and the "Thinking…" spinner at the bottom. **Esc**
+again brings the chat back exactly as it was.
 
-- **No se acaba nunca.** Hay seis tareas (un refactor, una paginación, un fallo
-  con Redis, webhooks duplicados, logs, una consulta lenta) que se encadenan en
-  orden aleatorio, con otras cifras y otro ritmo cada vez. Una vuelta completa
-  dura unos 4 minutos, y la siguiente sale en otro orden.
-- Entre tarea y tarea hay una pausa, como si escribieras el siguiente prompt, y
-  en el árbol se marcan los ficheros que va tocando la tarea en curso.
-
-- En modo jefe **no se envía nada a WhatsApp**: lo que escribas aparece como un
-  prompt más.
-- Los mensajes siguen llegando por debajo. Abajo a la derecha se cuentan como
+- **It never ends.** There are six tasks (a refactor, adding pagination, a
+  Redis bug, duplicate webhooks, logging, a slow query) that play back to back
+  in random order, with different numbers and pacing each time. A full round
+  takes about 4 minutes, and the next one comes in a different order.
+- Between tasks there's a pause, as if you were typing the next prompt, and the
+  tree marks the files the current task is editing.
+- In boss mode **nothing is sent to WhatsApp**: whatever you type shows up as
+  another prompt.
+- Messages keep arriving underneath. The bottom right counts them as
   `● 2 background tasks`.
-- Las tareas están en [`src/boss.js`](src/boss.js), por si quieres cambiar el
-  proyecto, las frases o añadir otras.
+- The tasks live in [`src/boss.js`](src/boss.js), in case you want to change the
+  project, the wording, or add your own.
 
-## Riesgo
+## Risk
 
-Baileys habla con los servidores de WhatsApp sin ser la app oficial, y eso va
-contra sus condiciones. **Puede acabar en baneo**, temporal o permanente. Con uso
-normal es poco probable, pero pasa más con números nuevos o si se mandan muchos
-mensajes. Un baneo temporal se pasa solo; uno permanente se puede recurrir desde
-la app, pero no hay garantía de recuperar el número.
+Baileys talks to WhatsApp's servers without being the official app, and that
+goes against their terms. **It can get you banned**, temporarily or
+permanently. With normal use it's unlikely, but it happens more with new numbers
+or when sending lots of messages. A temporary ban lifts on its own; a permanent
+one can be appealed from the app, but there's no guarantee of getting the number
+back.
 
-Para reducir el riesgo, el cliente:
+To lower the risk, the client:
 
-- no se pone «en línea» al conectar,
-- no pide el historial completo,
-- se presenta como WhatsApp de escritorio para Windows,
-- reconecta esperando cada vez más, sin insistir,
-- solo envía lo que escribes tú, nada automático.
+- doesn't go "online" when it connects,
+- doesn't request the full history,
+- identifies as WhatsApp Desktop for Windows,
+- reconnects with growing waits, without insisting,
+- only sends what you type, nothing automatic.
 
-No lo uses para envíos masivos ni para escribir a desconocidos.
+Don't use it for bulk messaging or to message strangers.
 
-## Datos en disco
+## Data on disk
 
-Todo va a la carpeta `.whatsterm` de tu usuario (`C:\Users\<tú>\.whatsterm` en
-Windows, `~/.whatsterm` en Mac y Linux). Si ejecutas el código desde un clon del
-repo y existe una carpeta `data/` junto a él, se usa esa.
+Everything goes to the `.whatsterm` folder in your home directory
+(`C:\Users\<you>\.whatsterm` on Windows, `~/.whatsterm` on macOS and Linux). If
+you run the code from a clone of the repo and there's a `data/` folder next to
+it, that one is used.
 
-| Qué | Para qué | Cuidado |
+| What | What for | Careful |
 |---|---|---|
-| `auth/` | La sesión vinculada | Quien tenga esta carpeta puede leer y escribir tu WhatsApp. No la copies ni la compartas |
-| `store.json` | Los últimos 150 mensajes de cada chat y los nombres, para tenerlos al volver a abrir | En un ordenador del trabajo, tenlo en cuenta. Se puede borrar cuando quieras |
-| `media/` | Los adjuntos que has abierto con `/view` | Igual que el anterior |
-| `qr.png` | El QR mientras vinculas | Se borra solo al vincular |
-| `wa.log` | Avisos y errores de Baileys | |
+| `auth/` | The linked session | Anyone with this folder can read and write your WhatsApp. Don't copy or share it |
+| `store.json` | The last 150 messages of each chat and the contact names, so they're there next time | Keep it in mind on a work computer. You can delete it any time |
+| `media/` | Attachments you've opened with `/view` | Same as above |
+| `qr.png` | The QR while you link | Deleted automatically once linked |
+| `wa.log` | Baileys warnings and errors | |
 
-Con la variable `WHATSTERM_DATA` se puede poner esa carpeta en otro sitio.
+The `WHATSTERM_DATA` environment variable lets you put that folder somewhere else.
 
-Para desvincular de verdad, `/logout`, o en el móvil **Dispositivos vinculados →
-el dispositivo → Cerrar sesión**.
+To really unlink, use `/logout`, or on your phone **Linked devices → the
+device → Log out**.
 
-## Preguntas frecuentes
+## FAQ
 
-**¿Necesito tener el móvil encendido?** Solo para vincular y para recuperar
-adjuntos antiguos. Después funciona como WhatsApp Web: el ordenador es un
-dispositivo vinculado más.
+**Does my phone need to be on?** Only to link and to recover old attachments.
+After that it works like WhatsApp Web: the computer is just another linked
+device.
 
-**¿Lee mis mensajes alguien más?** No. WhatsTerm habla directamente con los
-servidores de WhatsApp desde tu ordenador. No hay ningún servidor intermedio y
-no manda nada a ningún otro sitio.
+**Can anyone else read my messages?** No. WhatsTerm talks directly to WhatsApp's
+servers from your computer. There's no server in between and it doesn't send
+anything anywhere else.
 
-**¿Puedo usarlo en el ordenador del trabajo?** Técnicamente sí; para eso está el
-modo jefe. Pero guarda los últimos mensajes en disco (ver
-[Datos en disco](#datos-en-disco)) y quien tenga la carpeta `auth/` tiene tu
-WhatsApp. Valóralo tú.
+**Can I use it on my work computer?** Technically yes; that's what boss mode is
+for. But it keeps the latest messages on disk (see
+[Data on disk](#data-on-disk)) and whoever has the `auth/` folder has your
+WhatsApp. Your call.
 
-**El QR no se escanea.** Agranda la terminal (70×45 como mínimo), abre la imagen
-`qr.png` de la carpeta de datos o vincula con el número: `whatsterm --pair=34600111222`.
+**The QR won't scan.** Make the terminal bigger (70×45 at least), open the
+`qr.png` image in the data folder, or link with your number:
+`whatsterm --pair=14155550123`.
 
-**¿Por qué la pestaña se llama `claude`?** Para que el modo jefe sea creíble
-también desde fuera.
+**Why is the tab called `claude`?** So boss mode is believable from the outside
+too.
 
-## Contribuir
+## Contributing
 
-Los errores y las ideas van a los
-[issues](https://github.com/VolmerES/WhatsTerm/issues). Para mandar cambios,
-abre un pull request; antes, pasa `npm test`. Nada que envíe mensajes de forma
-automática ni en masa: es justo lo que hace que WhatsApp banee.
+Bugs and ideas go to the [issues](https://github.com/VolmerES/WhatsTerm/issues).
+Pull requests and suggestions for improvement are very welcome; run `npm test`
+before opening one. New fake tasks for boss mode are a great first PR. The only
+rule: nothing that sends messages automatically or in bulk, because that's
+exactly what gets accounts banned.
 
-## Desarrollo
+## Development
 
 ```sh
 git clone https://github.com/VolmerES/WhatsTerm.git
 cd WhatsTerm
 npm install
-npm start          # la app de verdad
-npm run demo       # la app con chats de mentira
-npm test           # renderiza la demo en una terminal simulada, pulsa teclas y vuelca las pantallas
-npm run capturas   # rehace las capturas de docs/capturas/ (usa el Chrome instalado)
+npm start             # the real app
+npm run demo          # the app with fake chats
+npm test              # renders the demo in a simulated terminal, presses keys and dumps the screens
+npm run screenshots   # regenerates docs/screenshots/ (uses your installed Chrome)
 ```
 
-Las capturas salen siempre de la demo, nunca de chats reales.
+Screenshots always come from the demo, never from real chats.
 
-| Fichero | Qué hace |
+| File | What it does |
 |---|---|
-| `src/index.js` | Arranque y opciones (`--demo`, `--pair=`, `--version`) |
-| `src/ui.js` | La interfaz, con [Ink](https://github.com/vadimdemedes/ink) a pantalla completa |
-| `src/input.js` | La caja de texto, propia para que los atajos no se escriban en el mensaje |
-| `src/wa.js` | La conexión con Baileys: mensajes, nombres, «escribiendo», adjuntos |
-| `src/store.js` | Chats, mensajes y nombres, guardados en `store.json` |
-| `src/demo.js` | El backend de mentira de `npm run demo` |
-| `src/boss.js` | Las tareas y el árbol de ficheros del modo jefe |
-| `scripts/capturas.js` | Genera las capturas |
-| `test/smoke.js` | Prueba de humo de la interfaz |
-| `docs/marca/` | Logo, icono y banner (verde `#25D366` sobre `#0F1012`, JetBrains Mono e Inter) |
+| `src/index.js` | Startup and options (`--demo`, `--pair=`, `--version`) |
+| `src/ui.js` | The full-screen UI, built with [Ink](https://github.com/vadimdemedes/ink) |
+| `src/input.js` | The text box, custom so shortcuts don't get typed into the message |
+| `src/wa.js` | The Baileys connection: messages, names, "typing", attachments |
+| `src/store.js` | Chats, messages and names, saved to `store.json` |
+| `src/demo.js` | The fake backend behind `npm run demo` |
+| `src/boss.js` | The boss mode tasks and file tree |
+| `scripts/screenshots.js` | Generates the screenshots |
+| `test/smoke.js` | UI smoke test |
+| `docs/brand/` | Logo, icon and banner (green `#25D366` on `#0F1012`, JetBrains Mono and Inter) |
 
-## Licencia
+## License
 
-[MIT](LICENSE). Puedes usarlo, modificarlo y redistribuirlo manteniendo el aviso
-de copyright. Se ofrece tal cual, sin garantías: el riesgo de baneo es de quien
-lo usa.
+[MIT](LICENSE). You can use, modify and redistribute it as long as you keep the
+copyright notice. It's provided as is, without warranty: the risk of a ban is on
+whoever uses it.

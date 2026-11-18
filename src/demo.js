@@ -1,29 +1,29 @@
-// Backend de mentira para probar la interfaz sin vincular el móvil: `npm run demo`.
+// Fake backend to try the UI without linking a phone: `npm run demo`.
 import { EventEmitter } from 'node:events';
 import os from 'node:os';
 import path from 'node:path';
 
-const ahora = Date.now();
+const now = Date.now();
 const min = 60_000;
 
 const CHATS = [
-  { id: 'ana@s.whatsapp.net', name: 'Ana', unread: 2, msgs: [
-    [false, 'buenas!! ¿qué tal la mañana?', 95], [true, 'liado, con la release de hoy', 93],
-    [true, 'pero bien, ¿y tú?', 93], [false, 'bien, aquí con el informe de ventas', 90],
-    [false, '¿bajas a comer?', 14], [true, 'en 10 min', 12], [false, 'vale, te espero abajo', 3],
-    [false, '[imagen] mira qué cola hay', 2] ] },
-  { id: 'curro@s.whatsapp.net', name: 'Curro', unread: 0, msgs: [
-    [false, '¿te pasaste el partido?', 120], [true, 'sí, qué final', 118] ] },
-  { id: 'fam@g.us', name: 'Familia', isGroup: true, unread: 5, msgs: [
-    [false, 'el domingo comemos en casa de la abuela', 300, 'mama@s.whatsapp.net'],
-    [false, '¿quién trae el postre?', 298, 'mama@s.whatsapp.net'],
-    [false, '[nota de voz]', 290, 'papa@s.whatsapp.net'], [true, 'yo llevo el postre', 282],
-    [true, 'allí estaré', 280], [false, 'perfecto, nos vemos allí', 270, 'lucia@s.whatsapp.net'] ] },
-  { id: 'padel@g.us', name: 'Pádel jueves', isGroup: true, unread: 0, msgs: [
-    [false, 'pista reservada a las 19:30', 600, 'curro@s.whatsapp.net'], [true, 'me apunto', 590] ] },
-  { id: 'jefe@s.whatsapp.net', name: 'Marta (trabajo)', unread: 0, msgs: [[false, 'mañana reunión a las 9', 1440]] },
-  { id: 'lucia@s.whatsapp.net', name: 'Lucía', unread: 0, msgs: [[true, 'te paso las fotos luego', 2000], [false, 'genial, gracias', 1990]] },
-  { id: 'casero@s.whatsapp.net', name: 'Javier (piso)', unread: 0, msgs: [[false, 'el lunes pasa el técnico de la caldera', 4000]] },
+  { id: 'anna@s.whatsapp.net', name: 'Anna', unread: 2, msgs: [
+    [false, 'hey!! how is your morning going?', 95], [true, 'busy, shipping the release today', 93],
+    [true, 'but good, you?', 93], [false, 'fine, stuck on the sales report', 90],
+    [false, 'lunch?', 14], [true, 'in 10 min', 12], [false, 'ok, see you downstairs', 3],
+    [false, '[image] look at this queue', 2] ] },
+  { id: 'mike@s.whatsapp.net', name: 'Mike', unread: 0, msgs: [
+    [false, 'did you watch the game?', 120], [true, 'yes, what a finish', 118] ] },
+  { id: 'fam@g.us', name: 'Family', isGroup: true, unread: 5, msgs: [
+    [false, "sunday lunch at grandma's", 300, 'mom@s.whatsapp.net'],
+    [false, "who's bringing dessert?", 298, 'mom@s.whatsapp.net'],
+    [false, '[voice note]', 290, 'dad@s.whatsapp.net'], [true, "I'll bring dessert", 282],
+    [true, "I'll be there", 280], [false, 'great, see you there', 270, 'lucy@s.whatsapp.net'] ] },
+  { id: 'padel@g.us', name: 'Thursday padel', isGroup: true, unread: 0, msgs: [
+    [false, 'court booked for 7:30pm', 600, 'mike@s.whatsapp.net'], [true, "I'm in", 590] ] },
+  { id: 'boss@s.whatsapp.net', name: 'Martha (work)', unread: 0, msgs: [[false, 'meeting tomorrow at 9', 1440]] },
+  { id: 'lucy@s.whatsapp.net', name: 'Lucy', unread: 0, msgs: [[true, "I'll send you the photos later", 2000], [false, 'great, thanks', 1990]] },
+  { id: 'landlord@s.whatsapp.net', name: 'James (flat)', unread: 0, msgs: [[false, 'the boiler technician is coming on monday', 4000]] },
 ];
 
 export class Demo extends EventEmitter {
@@ -33,28 +33,28 @@ export class Demo extends EventEmitter {
   }
 
   async start() {
-    this.store.setName('mama@s.whatsapp.net', 'Mamá');
-    this.store.setName('papa@s.whatsapp.net', 'Papá');
-    this.store.setName('lucia@s.whatsapp.net', 'Lucía');
-    this.store.setName('curro@s.whatsapp.net', 'Curro');
+    this.store.setName('mom@s.whatsapp.net', 'Mom');
+    this.store.setName('dad@s.whatsapp.net', 'Dad');
+    this.store.setName('lucy@s.whatsapp.net', 'Lucy');
+    this.store.setName('mike@s.whatsapp.net', 'Mike');
     for (const c of CHATS) {
       const chat = this.store.chat(c.id, { name: c.name, isGroup: !!c.isGroup });
       chat.unread = c.unread;
-      c.msgs.forEach(([fromMe, text, hace, sender], i) => {
+      c.msgs.forEach(([fromMe, text, ago, sender], i) => {
         let media = null;
-        if (/^\[(imagen|nota de voz)\]/.test(text)) {
+        if (/^\[(image|voice note)\]/.test(text)) {
           media = { n: ++this.store.mediaSeq, ext: 'png', fileName: null };
           text = text.replace(/^\[([^\]]+)\]/, `[$1 #${media.n}]`);
         }
-        this.store.addMsg(c.id, { id: c.id + i, fromMe, text, ts: ahora - hace * min, sender: fromMe ? 'me' : sender ?? c.id, media });
+        this.store.addMsg(c.id, { id: c.id + i, fromMe, text, ts: now - ago * min, sender: fromMe ? 'me' : sender ?? c.id, media });
       });
     }
     setTimeout(() => this.emit('status', 'open'), 300);
-    // Curro escribe y manda algo a los pocos segundos
-    setTimeout(() => this.emit('presence', 'curro@s.whatsapp.net', true), 6000);
+    // Mike starts typing and sends something a few seconds in
+    setTimeout(() => this.emit('presence', 'mike@s.whatsapp.net', true), 6000);
     setTimeout(() => {
-      this.emit('presence', 'curro@s.whatsapp.net', false);
-      this.incoming('curro@s.whatsapp.net', '¿echamos un pádel el jueves?');
+      this.emit('presence', 'mike@s.whatsapp.net', false);
+      this.incoming('mike@s.whatsapp.net', 'padel on thursday?');
     }, 9000);
   }
 
@@ -70,19 +70,19 @@ export class Demo extends EventEmitter {
     const msg = { id: 'm' + Date.now(), fromMe: true, sender: 'me', text, ts: Date.now() };
     this.store.addMsg(chatId, msg);
     this.emit('message', chatId, msg, false);
-    // el otro contesta
+    // the other side replies
     setTimeout(() => this.emit('presence', chatId, true), 1500);
     setTimeout(() => {
       this.emit('presence', chatId, false);
-      this.incoming(chatId, 'jajaja vale');
+      this.incoming(chatId, 'haha ok');
     }, 4000);
   }
 
-  // en la demo, el «adjunto» es un PNG generado al vuelo
+  // in the demo, the "attachment" is a PNG generated on the fly
   async download(msg) {
     const { default: QRCode } = await import('qrcode');
-    const file = path.join(os.tmpdir(), `wa-terminal-demo-${msg.media.n}.png`);
-    await QRCode.toFile(file, 'wa-terminal demo #' + msg.media.n, { width: 300 });
+    const file = path.join(os.tmpdir(), `whatsterm-demo-${msg.media.n}.png`);
+    await QRCode.toFile(file, 'whatsterm demo #' + msg.media.n, { width: 300 });
     return file;
   }
 

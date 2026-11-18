@@ -9,8 +9,8 @@ import { Store } from './store.js';
 import { App } from './ui.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-// Los datos van a ~/.whatsterm, fuera del paquete, para que no se pierdan al actualizar.
-// Si hay una carpeta data/ junto al código (instalación antigua desde git), se sigue usando esa.
+// Data lives in ~/.whatsterm, outside the package, so updates don't wipe it.
+// If there's a data/ folder next to the code (an old install from git), that one is used.
 const dataDir = process.env.WHATSTERM_DATA || process.env.WA_TERMINAL_DATA
   || (fs.existsSync(path.join(root, 'data')) ? path.join(root, 'data') : path.join(os.homedir(), '.whatsterm'));
 if (process.argv.includes('--version') || process.argv.includes('-v')) {
@@ -18,11 +18,11 @@ if (process.argv.includes('--version') || process.argv.includes('-v')) {
   process.exit(0);
 }
 const demo = process.argv.includes('--demo');
-// la ruta que sale en la cabecera; por defecto, la carpeta desde la que lo lanzas
+// the path shown in the header; by default, the folder you launch it from
 const cwdArg = process.argv.find((a) => a.startsWith('--cwd='));
 const cwd = cwdArg ? cwdArg.slice(6) : process.cwd();
 
-// título de la pestaña de la terminal
+// terminal tab title
 process.title = 'claude';
 process.stdout.write('\x1b]0;claude\x07');
 
@@ -39,7 +39,7 @@ if (demo) {
 
 const app = render(React.createElement(App, { backend, store, cwd, demo, dataDir }), {
   exitOnCtrlC: true,
-  // pantalla completa: al salir, la terminal vuelve a como estaba, sin rastro de los mensajes
+  // full screen: on exit the terminal goes back to how it was, with no trace of the messages
   alternateScreen: true,
 });
 await app.waitUntilExit();

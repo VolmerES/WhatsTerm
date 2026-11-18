@@ -1,7 +1,7 @@
 {
   "name": "whatsterm",
   "version": "1.0.1",
-  "description": "WhatsApp en la terminal: un chat sobrio con modo jefe. Cliente no oficial, sin relación con WhatsApp ni Meta.",
+  "description": "WhatsApp in your terminal that looks like work: a sober, keyboard-only chat with a boss key. Unofficial client, not affiliated with WhatsApp or Meta.",
   "keywords": [
     "whatsapp",
     "terminal",
@@ -35,7 +35,7 @@
   "scripts": {
     "start": "node src/index.js",
     "demo": "node src/index.js --demo",
-    "capturas": "node scripts/capturas.js",
+    "screenshots": "node scripts/screenshots.js",
     "test": "node test/smoke.js"
   },
   "dependencies": {
